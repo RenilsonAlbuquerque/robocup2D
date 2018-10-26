@@ -27,18 +27,16 @@ public class CenterBack extends IbisPlayer{
 			
 			if (teamHasBall()) {
 				if(this.selfPerc.getState().compareTo(EPlayerState.HAS_BALL) == 0) {
-					
+					int shirt = isSomeoneFree();
+					if(shirt != -1){
+						shortPass(shirt,2.0);
+					}else{
+						//avança ao meio de campo esperando alguém ficar livre
+					}
 				}
 				else {
-					
+					//se posiciona para receber a bola
 				}
-				/*
-				if (closeToBall()) {
-					commander.doKick(50.0d, 0.0d);
-				} else {
-					runToBall();
-				}
-				*/
 			} else {
 				if(ballInDefenseField()) {
 					if(isAlignedToBall()) {

@@ -95,11 +95,29 @@ public class IbisPlayer extends Thread {
 		else
 			return false;
 	}
-	/*
+	
 	protected boolean amIFree() {
+		for (PlayerPerception player : fieldPerc.getAllPlayers()) {
+			if (player.getPosition().distanceTo(selfPerc.getPosition()) < 10 ) {
+				return false;
+			}
+		}
+		return true;
+	}
+	protected int isSomeoneFree(){
+		for (PlayerPerception player : fieldPerc.getAllPlayers()) {
+			if (player.getPosition().distanceTo(selfPerc.getPosition()) < 10 && player.getUniformNumber() != selfPerc.getUniformNumber() ) {
+				return player.getUniformNumber();
+			}
+		}
+		return -1;
+	}
+	protected void shortPass(int playerNumber, double intensity){
+		Vector2D position = fieldPerc.getTeamPlayer(this.commander.getFieldSide(), playerNumber).getPosition();
+		commander.doTurnToPoint( position);
+		commander.doKickToPoint(intensity, position);
 		
 	}
-	*/
-	
+
 
 }
