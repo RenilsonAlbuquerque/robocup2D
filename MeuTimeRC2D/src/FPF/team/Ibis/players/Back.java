@@ -63,6 +63,7 @@ public class Back extends Thread {
 		if (newSelf != null ) this .selfPerc = newSelf;
 		if (newField != null ) this .fieldPerc = newField;
 		if (newMatch != null ) this .matchPerc = newMatch;
+	
 	}
 
 	private void turnToPoint(Vector2D point){
