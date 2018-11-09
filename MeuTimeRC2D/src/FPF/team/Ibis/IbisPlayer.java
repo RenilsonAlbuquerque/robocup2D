@@ -1,7 +1,7 @@
 package FPF.team.Ibis;
 
 import java.awt.Rectangle;
-import java.util.ArrayList;
+
 
 import simple_soccer_lib.PlayerCommander;
 import simple_soccer_lib.perception.FieldPerception;
@@ -10,6 +10,7 @@ import simple_soccer_lib.perception.PlayerPerception;
 import simple_soccer_lib.utils.EFieldSide;
 import simple_soccer_lib.utils.EPlayerState;
 import simple_soccer_lib.utils.Vector2D;
+import utils.PlayerUtils;
 
 
 public class IbisPlayer extends Thread {
@@ -79,7 +80,7 @@ public class IbisPlayer extends Thread {
 	}
 	private void gkDash(Vector2D point){
 		if (!isAlignToPoint(point, 15)) turnToPoint(point);
-		System.out.println(point.getX() + " " + point.getY());
+		
 		commander.doDashBlocking(70);
 	}
 
@@ -98,37 +99,7 @@ public class IbisPlayer extends Thread {
 		return angle < margin && angle > margin*(-1);
 	}
 
-	private boolean isPointsAreClose(Vector2D reference,
-			Vector2D point, double margin){
-		return reference.distanceTo(point) <= margin;
-	}
-
-	private PlayerPerception getClosestPlayerPoint(Vector2D point, EFieldSide side, double margin){
-		ArrayList<PlayerPerception> lp = fieldPerc.getTeamPlayers(side);
-		PlayerPerception np = null ;
-		if (lp != null && !lp.isEmpty()){
-			double dist,temp;
-			dist = lp.get(0).getPosition().distanceTo(point);
-			np = lp.get(0);
-			if (isPointsAreClose(np.getPosition(), point, margin))
-				return np;
-			for (PlayerPerception p : lp) {
-				if(!p.getPosition().equals(point)) {
-					if (p.getPosition() == null )
-						break ;
-					if (isPointsAreClose(p.getPosition(), point, margin))
-						return p;
-					temp = p.getPosition().distanceTo(point);
-					if (temp < dist){
-						dist = temp;
-						np = p;
-					}
-				}
-				
-			}
-		}
-		return np;
-	}
+	
 
 	private void actionGoalKeeper( long nextIteration) {
 		//new Arc2D.Double(50, 50, 300, 300, 180, 90, Arc2D.PIE)
@@ -153,6 +124,8 @@ public class IbisPlayer extends Thread {
 						
 						ballX=fieldPerc.getBall().getPosition().getX();
 						ballY=fieldPerc.getBall().getPosition().getY();
+						
+						
 						
 						if(side == EFieldSide.RIGHT) {
 							/*
@@ -179,7 +152,7 @@ public class IbisPlayer extends Thread {
 						double distanceUp = new Vector2D(ballX,ballY).distanceTo(new Vector2D(newX,this.selfPerc.getPosition().getY() - 1f));
 						double distanceDown = new Vector2D(ballX,ballY).distanceTo(new Vector2D(newX,this.selfPerc.getPosition().getY() + 1f));
 						//System.out.println(distanceUp + " " + distanceDown);
-						System.out.println(this.selfPerc.getPosition().getY());
+						
 						if(distanceUp < distanceDown) {
 							//System.out.println("Pra cima");
 							if(this.selfPerc.getPosition().getY() > -6.0) {
@@ -221,10 +194,10 @@ public class IbisPlayer extends Thread {
 					case GOAL_KICK_RIGHT :
 						if(this.selfPerc.getSide() == EFieldSide.RIGHT) {
 							
-							System.out.println(this.getClosestPlayerPoint(this.selfPerc.getPosition(), this.selfPerc.getSide(), 3).getUniformNumber());
+							
 							this.dash(ballPos);
 							this.kickToPoint(
-							this.getClosestPlayerPoint(this.selfPerc.getPosition(), this.selfPerc.getSide(), -3).getPosition(), -500);
+							PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), -3).getPosition(), -500);
 						}
 						break;
 					case GOAL_KICK_LEFT :
@@ -234,7 +207,7 @@ public class IbisPlayer extends Thread {
 							
 							this.dash(ballPos);
 							this.kickToPoint(
-									this.getClosestPlayerPoint(this.selfPerc.getPosition(), this.selfPerc.getSide(), 3).getPosition(), 500);
+									PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 3).getPosition(), 500);
 						}	
 						break;
 						/* Todos os estados da partida */
@@ -246,8 +219,7 @@ public class IbisPlayer extends Thread {
 	private void actionBack( long nextIteration, int pos) {
 		double xInit=-32, yInit=12*pos;
 		EFieldSide side = selfPerc.getSide();
-		Vector2D initPos =
-				new Vector2D(xInit*side.value(), yInit*side.value());
+		Vector2D initPos = new Vector2D(xInit*side.value(), yInit*side.value());
 		Vector2D ballPos, vTemp;
 		PlayerPerception pTemp;
 		while ( true ) {
@@ -256,42 +228,24 @@ public class IbisPlayer extends Thread {
 			switch (matchPerc.getState()) {
 			case BEFORE_KICK_OFF :
 				commander.doMoveBlocking(xInit, yInit);
-				
 				break ;
 			case PLAY_ON :
-				if (isPointsAreClose(selfPerc.getPosition(),
-						ballPos, 1)){
-					if (selfPerc.getUniformNumber() == 2){
-						// toca para o jogador 3
-						vTemp = fieldPerc.getTeamPlayer(
-								side, 3).getPosition();
-					} else {
-						// toca para o jogador 4
-						vTemp = fieldPerc.getTeamPlayer(
-								side, 4).getPosition();
+				if(this.teamHasBall()){ // meu time tem a bola?
+					if(this.selfPerc.getState() == EPlayerState.HAS_BALL){ //eu estou com a bola?
+						//toca pra alguém desmarcado
+						kickToPoint(PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 5).getPosition(), 5);
+					}else{
+						this.freeFromMark(new Vector2D(xInit,yInit));
 					}
-					Vector2D vTempF = vTemp.sub(selfPerc
-							.getPosition());
-					double intensity =
-							(vTempF.magnitude()*100)/40;
-					kickToPoint(vTemp, intensity);
-				} else {
-					pTemp = getClosestPlayerPoint(ballPos,
-							side, 3);
-					if (pTemp != null &&
-							pTemp.getUniformNumber() == selfPerc
-							.getUniformNumber()){
-						// pega a bola
-						dash(ballPos);
-					} else if (!isPointsAreClose(selfPerc
-							.getPosition(), initPos, 3)){
-						// recua
-						dash(initPos);
-					} else {
-						// olha para a bola
-						turnToPoint(ballPos);
-					}
+				}else{
+					this.mark();
 				}
+				break ;
+			case GOAL_KICK_RIGHT :
+				commander.doMoveBlocking(xInit, yInit);
+				break ;
+			case GOAL_KICK_LEFT :
+				commander.doMoveBlocking(xInit, yInit);
 				break ;
 				/* Todos os estados da partida */
 			default :
@@ -318,39 +272,23 @@ public class IbisPlayer extends Thread {
 				commander.doMoveBlocking(xInit, yInit);
 				break ;
 			case PLAY_ON :
-				if (isPointsAreClose(selfPerc.getPosition(),
-						ballPos, 1)){
-					if (selfPerc.getUniformNumber() == 2){
-						// toca para o jogador 3
-						vTemp = fieldPerc.getTeamPlayer(
-								side, 3).getPosition();
-					} else {
-						// toca para o jogador 4
-						vTemp = fieldPerc.getTeamPlayer(
-								side, 4).getPosition();
+				if(this.teamHasBall()){ // meu time tem a bola?
+					if(this.selfPerc.getState() == EPlayerState.HAS_BALL){ //eu estou com a bola?
+						System.out.println("I have the ball");
+						//toca pra alguém desmarcado
+						kickToPoint(PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 5).getPosition(), 5);
+					}else{
+						this.freeFromMark(new Vector2D(xInit,yInit));
 					}
-					Vector2D vTempF = vTemp.sub(selfPerc
-							.getPosition());
-					double intensity =
-							(vTempF.magnitude()*100)/40;
-					kickToPoint(vTemp, intensity);
-				} else {
-					pTemp = getClosestPlayerPoint(ballPos,
-							side, 3);
-					if (pTemp != null &&
-							pTemp.getUniformNumber() == selfPerc
-							.getUniformNumber()){
-						// pega a bola
-						dash(ballPos);
-					} else if (!isPointsAreClose(selfPerc
-							.getPosition(), initPos, 3)){
-						// recua
-						dash(initPos);
-					} else {
-						// olha para a bola
-						turnToPoint(ballPos);
-					}
+				}else{
+					this.mark();
 				}
+				break ;
+			case GOAL_KICK_RIGHT :
+				commander.doMoveBlocking(xInit, yInit);
+				break ;
+			case GOAL_KICK_LEFT :
+				commander.doMoveBlocking(xInit, yInit);
 				break ;
 				/* Todos os estados da partida */
 			default :
@@ -375,9 +313,9 @@ public class IbisPlayer extends Thread {
 				commander.doMoveBlocking(xInit, yInit);
 				break ;
 			case PLAY_ON :
-				if (isPointsAreClose(selfPerc.getPosition(),
+				if (PlayerUtils.isPointsAreClose(selfPerc.getPosition(),
 						ballPos, 1)){
-					if (isPointsAreClose(ballPos, goalPos, 30)){
+					if (PlayerUtils.isPointsAreClose(ballPos, goalPos, 30)){
 						// chuta para o gol
 						kickToPoint(goalPos, 100);
 					} else {
@@ -385,14 +323,14 @@ public class IbisPlayer extends Thread {
 						kickToPoint(goalPos, 25);
 					}
 				} else {
-					pTemp = getClosestPlayerPoint(ballPos,
+					pTemp = PlayerUtils.getClosestTeammatePoint(this.fieldPerc,ballPos,
 							side, 3);
 					if (pTemp != null &&
 							pTemp.getUniformNumber() == selfPerc
 							.getUniformNumber()){
 						// pega a bola
 						dash(ballPos);
-					} else if (!isPointsAreClose(selfPerc
+					} else if (!PlayerUtils.isPointsAreClose(selfPerc
 							.getPosition(),initPos, 3)){
 						// recua
 						dash(initPos);
@@ -411,11 +349,11 @@ public class IbisPlayer extends Thread {
 	
 	/*------------*/
 	private boolean updateState() {
-		if(this.isPointsAreClose(this.selfPerc.getPosition(),this.fieldPerc.getBall().getPosition(),2)) {
+		if(PlayerUtils.isPointsAreClose(this.selfPerc.getPosition(),this.fieldPerc.getBall().getPosition(),2)) {
 			this.selfPerc.setState(EPlayerState.HAS_BALL);
 			return true;
 		}
-		if(!this.getClosestPlayerPoint(this.selfPerc.getPosition(), this.selfPerc.getSide(), 3).getSide().equals(this.selfPerc.getSide()) ) {
+		if(!PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 3).getSide().equals(this.selfPerc.getSide()) ) {
 			this.selfPerc.setState(EPlayerState.CATCH);
 			return true;
 		}
@@ -430,13 +368,18 @@ public class IbisPlayer extends Thread {
 		return false;
 	}
 	private void mark() {
-		if(this.isPointsAreClose(selfPerc.getPosition(),this.fieldPerc.getBall().getPosition(), 4)) {
+		//Estou no raio de ação da jogada?
+		if(PlayerUtils.isPointsAreClose(selfPerc.getPosition(),this.fieldPerc.getBall().getPosition(), 4)) {
+			//Sou o marcador mais próximo?
 			if(iAmTheLastPlayer()) {
+				//tenta roubar a bola
+				this.dash(this.fieldPerc.getBall().getPosition());
+			}else{
+				//faz a cobertura
 				this.dash(this.fieldPerc.getBall().getPosition());
 			}
-			
-		}else {
-			//this.dash();
+		}else{ //procuro alguém próximo pra marcar
+			this.dash(PlayerUtils. searchNearbyEnemy(fieldPerc, this.selfPerc.getSide(), this.selfPerc.getPosition(), 5).getPosition());
 		}
 	}
 	
@@ -449,6 +392,12 @@ public class IbisPlayer extends Thread {
 			
 		}
 		return true;
+	}
+	private void freeFromMark(Vector2D playerOriginalPosition){
+		PlayerPerception marker = PlayerUtils.searchNearbyEnemy(this.fieldPerc, this.selfPerc.getSide(), this.selfPerc.getPosition(), 4);
+		if(marker.getPosition().distanceTo(this.selfPerc.getPosition()) <= 3){
+			this.dash(playerOriginalPosition);
+		}
 	}
 	
 
