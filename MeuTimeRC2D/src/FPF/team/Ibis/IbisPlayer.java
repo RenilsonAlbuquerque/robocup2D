@@ -151,7 +151,6 @@ public class IbisPlayer extends Thread {
 						break ;
 					case PLAY_ON :
 						
-						
 						ballX=fieldPerc.getBall().getPosition().getX();
 						ballY=fieldPerc.getBall().getPosition().getY();
 						
@@ -429,6 +428,27 @@ public class IbisPlayer extends Thread {
 				return true;
 		}
 		return false;
+	}
+	private void mark() {
+		if(this.isPointsAreClose(selfPerc.getPosition(),this.fieldPerc.getBall().getPosition(), 4)) {
+			if(iAmTheLastPlayer()) {
+				this.dash(this.fieldPerc.getBall().getPosition());
+			}
+			
+		}else {
+			//this.dash();
+		}
+	}
+	
+	private boolean iAmTheLastPlayer() {
+		double distance = this.selfPerc.getPosition().distanceTo(this.fieldPerc.getBall().getPosition());
+		for(PlayerPerception p: this.fieldPerc.getTeamPlayers(this.selfPerc.getSide())) {
+			if(p.getPosition().distanceTo(this.fieldPerc.getBall().getPosition()) < distance ) {
+				return false;
+			}
+			
+		}
+		return true;
 	}
 	
 
