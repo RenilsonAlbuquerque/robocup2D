@@ -3,31 +3,29 @@ package FPF.team.Ibis.players;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
+
 import simple_soccer_lib.PlayerCommander;
 import simple_soccer_lib.perception.FieldPerception;
 import simple_soccer_lib.perception.MatchPerception;
 import simple_soccer_lib.perception.PlayerPerception;
 import simple_soccer_lib.utils.EFieldSide;
+import simple_soccer_lib.utils.EPlayerState;
 import simple_soccer_lib.utils.Vector2D;
+import utils.PlayerUtils;
 
 
-public class Goolkeeper extends Thread {
+public class Goolkeeper {
 	private int LOOP_INTERVAL = 100; //0.1s
 	private PlayerCommander commander;
 	private PlayerPerception selfPerc;
 	private FieldPerception fieldPerc;
 	private MatchPerception matchPerc;
+	private ArrayList<Rectangle> myAreas;
 
-	public Goolkeeper(PlayerCommander player) {
+	public Goolkeeper(PlayerCommander player,long nextIteration) {
 		commander = player;
+		this.action(nextIteration);
 	}
-	@Override
-	public void run() {
-		System. out .println(">> Executando...");
-		long nextIteration = System.currentTimeMillis() + LOOP_INTERVAL;
-		updatePerceptions();
-		actionGoalKeeper(nextIteration);
-		}
 
 	private void updatePerceptions() {
 		PlayerPerception newSelf =
@@ -39,6 +37,7 @@ public class Goolkeeper extends Thread {
 		if (newSelf != null ) this .selfPerc = newSelf;
 		if (newField != null ) this .fieldPerc = newField;
 		if (newMatch != null ) this .matchPerc = newMatch;
+		this.updateState();
 	}
 
 	private void turnToPoint(Vector2D point){
@@ -96,12 +95,18 @@ public class Goolkeeper extends Thread {
 		return np;
 	}
 
-	private void actionGoalKeeper( long nextIteration) {
+	public void action( long nextIteration) {
+		this.updatePerceptions();
+		//new Arc2D.Double(50, 50, 300, 300, 180, 90, Arc2D.PIE)
 		double xInit=-48, yInit=0, ballX=0, ballY=0;
+		double newX = 0, newY =0;
 		EFieldSide side = selfPerc.getSide();
-		Vector2D initPos = new Vector2D(xInit*side.value(), yInit*side.value());
+		Vector2D initPos =
+				new Vector2D(xInit*side.value(), yInit*side.value());
 		Vector2D ballPos;
-		Rectangle area = side == EFieldSide.LEFT ?	new Rectangle(-52, -20, 16, 40): new Rectangle(36, -20, 16, 40);
+		Rectangle area = side == EFieldSide.LEFT ?
+				new Rectangle(-52, -20, 16, 40):
+					new Rectangle(36, -20, 16, 40);
 				while ( true ) {
 					updatePerceptions();
 					ballPos = fieldPerc.getBall().getPosition();
@@ -111,8 +116,70 @@ public class Goolkeeper extends Thread {
 						commander.doMoveBlocking(xInit, yInit);
 						break ;
 					case PLAY_ON :
+						
 						ballX=fieldPerc.getBall().getPosition().getX();
 						ballY=fieldPerc.getBall().getPosition().getY();
+						
+						if(this.selfPerc.getPosition().distanceTo(this.fieldPerc.getBall().getPosition()) < 6) {
+							if(!this.teamHasBall()) {
+								this.dash(ballPos);
+							}
+							else if(this.selfPerc.getState() == EPlayerState.HAS_BALL) {
+								this.turnToPoint(new Vector2D(0,0));
+								this.kickToPoint(
+										PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 3).getPosition(), 500);
+							}
+							
+						}else {
+							if(side == EFieldSide.RIGHT) {
+								/*
+								if(ballX < 0 ) {//se a bola está antes do meio do campo
+									newX = 37; 
+								}
+								else */if(ballX > 37) { // se a bola está dentro da grande área
+									newX = 50;
+								}else {// se a bola está na intermediária
+									newX = 47;
+								}
+							}else {
+								/*if(ballX > 0 ) {//se a bola está antes do meio do campo
+									newX = -37; 
+								}
+								else */if(ballX < -36) { // se a bola está dentro da grande área
+									newX = -50;
+								}else {// se a bola está na intermediária
+									newX = -47;
+								}
+							}
+							
+							
+							double distanceUp = new Vector2D(ballX,ballY).distanceTo(new Vector2D(newX,this.selfPerc.getPosition().getY() - 1f));
+							double distanceDown = new Vector2D(ballX,ballY).distanceTo(new Vector2D(newX,this.selfPerc.getPosition().getY() + 1f));
+							//System.out.println(distanceUp + " " + distanceDown);
+							
+							if(distanceUp < distanceDown) {
+								//System.out.println("Pra cima");
+								if(this.selfPerc.getPosition().getY() > -6.0) {
+									//this.turnToPoint(new Vector2D(newX,this.selfPerc.getPosition().getY() - 0.5));
+									this.gkDash(new Vector2D(newX,this.selfPerc.getPosition().getY() - 0.5));
+								}
+								
+							}else{
+								
+								if(this.selfPerc.getPosition().getY() < 6.0) {
+									//this.turnToPoint(new Vector2D(newX,this.selfPerc.getPosition().getY() + 0.5));
+									this.gkDash(new Vector2D(newX,this.selfPerc.getPosition().getY() + 0.5));
+								}
+								
+							}
+							
+						}
+						
+						
+						
+						
+						
+						/*
 						if (isPointsAreClose(selfPerc.getPosition(),
 								ballPos, 1)){
 							// chutar
@@ -128,10 +195,54 @@ public class Goolkeeper extends Thread {
 							// olhar para a bola
 							turnToPoint(ballPos);
 						}
+						*/
+						
 						break ;
+					case GOAL_KICK_RIGHT :
+						if(this.selfPerc.getSide() == EFieldSide.RIGHT) {
+						
+							this.dash(ballPos);
+							this.kickToPoint(
+							PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), -3).getPosition(), -500);
+						}
+						break;
+					case GOAL_KICK_LEFT :
+						
+						if(this.selfPerc.getSide() == EFieldSide.LEFT) {
+							
+							this.dash(ballPos);
+							this.kickToPoint(
+									PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 3).getPosition(), 500);
+						}	
+						break;
 						/* Todos os estados da partida */
 					default : break ;
 					}
 				}
+	}
+	private boolean teamHasBall() {
+		for(PlayerPerception p: this.fieldPerc.getTeamPlayers(this.selfPerc.getSide())) {
+			if(p.getState().equals(EPlayerState.HAS_BALL))
+				return true;
+		}
+		return false;
+	}
+	private boolean updateState() {
+		if(PlayerUtils.isPointsAreClose(this.selfPerc.getPosition(),this.fieldPerc.getBall().getPosition(),2)
+				) {
+			this.selfPerc.setState(EPlayerState.HAS_BALL);
+			return true;
+		}
+		if(!PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 3).getSide().equals(this.selfPerc.getSide()) ) {
+			this.selfPerc.setState(EPlayerState.CATCH);
+			return true;
+		}
+		return true;
+		
+	}
+	private void gkDash(Vector2D point){
+		if (!isAlignToPoint(point, 15)) turnToPoint(point);
+		
+		commander.doDashBlocking(70);
 	}
 }

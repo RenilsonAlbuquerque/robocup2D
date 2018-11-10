@@ -1,5 +1,6 @@
 package FPF.team.Ibis.players;
 
+
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
@@ -13,7 +14,7 @@ import simple_soccer_lib.utils.Vector2D;
 import utils.PlayerUtils;
 
 
-public class Back extends Thread {
+public class DefensiveMidFielder extends Thread {
 	private int LOOP_INTERVAL = 100; //0.1s
 	private PlayerCommander commander;
 	private PlayerPerception selfPerc;
@@ -21,9 +22,9 @@ public class Back extends Thread {
 	private MatchPerception matchPerc;
 	private ArrayList<Rectangle> myAreas;
 
-	public Back(PlayerCommander player, long nextIteration,int pos) {
+	public DefensiveMidFielder(PlayerCommander player, long nextIteration) {
 		commander = player;
-		this.action(nextIteration, pos);
+		this.action(nextIteration);
 	}
 	
 
@@ -37,7 +38,6 @@ public class Back extends Thread {
 		if (newSelf != null ) this .selfPerc = newSelf;
 		if (newField != null ) this .fieldPerc = newField;
 		if (newMatch != null ) this .matchPerc = newMatch;
-	
 	}
 
 	private void turnToPoint(Vector2D point){
@@ -94,12 +94,13 @@ public class Back extends Thread {
 		}
 		return np;
 	}
-	
-	private void action( long nextIteration, int pos) {
+
+	private void action( long nextIteration) {
 		this.updatePerceptions();
-		double xInit=-32, yInit=12*pos;
+		double xInit=-22, yInit=0;
+				
 		EFieldSide side = selfPerc.getSide();
-		Vector2D initPos = new Vector2D(xInit*side.value(), yInit*side.value());
+		Vector2D initPos =	new Vector2D(xInit*side.value(), yInit*side.value());
 		Vector2D ballPos, vTemp;
 		PlayerPerception pTemp;
 		while ( true ) {
@@ -113,9 +114,9 @@ public class Back extends Thread {
 				if(this.teamHasBall()){ // meu time tem a bola?
 					if(this.selfPerc.getState() == EPlayerState.HAS_BALL){ //eu estou com a bola?
 						//toca pra alguém desmarcado
-						kickToPoint(PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 5).getPosition(), 5);
+						kickToPoint(PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 5).getPosition(), 30);
 					}else{
-						this.freeFromMark(initPos);
+						//this.freeFromMark(initPos);
 						this.atack(initPos);
 					}
 				}else{
@@ -176,22 +177,23 @@ public class Back extends Thread {
 	}
 	private void atack(Vector2D originalPosition) {
 		
-		
 			if(this.selfPerc.getSide() == EFieldSide.LEFT) {
-				if(this.fieldPerc.getBall().getPosition().getX() > 10 ) {
-					this.dash(new Vector2D(0 - 2,originalPosition.getY()));
+				if(this.fieldPerc.getBall().getPosition().getX() > 0 ) {	
+					System.out.println(this.selfPerc.getUniformNumber() + " Atacking");
+					this.dash(new Vector2D(originalPosition.getX() + 60, originalPosition.getY()));
+				}else {
+					this.dash(originalPosition);
+				}
+			}else {
+				if(this.fieldPerc.getBall().getPosition().getX() < 0 ) {
+					System.out.println(this.selfPerc.getUniformNumber() + " Atacking");
+					this.dash(new Vector2D(originalPosition.getX() - 30, originalPosition.getY()));
 				}
 				else {
 					this.dash(originalPosition);
 				}
-			}else {
-				if(this.fieldPerc.getBall().getPosition().getX() < - 10 ) {
-					this.dash(new Vector2D(0 +2, originalPosition.getY()));
-				}else {
-					this.dash(originalPosition);
-				}
+				
 			}
-	
 	}
 	private boolean teamHasBall() {
 		for(PlayerPerception p: this.fieldPerc.getTeamPlayers(this.selfPerc.getSide())) {
@@ -201,6 +203,5 @@ public class Back extends Thread {
 		return false;
 	}
 
-	
 
 }

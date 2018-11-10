@@ -9,49 +9,71 @@ import simple_soccer_lib.perception.MatchPerception;
 import simple_soccer_lib.perception.PlayerPerception;
 import simple_soccer_lib.utils.EFieldSide;
 import simple_soccer_lib.utils.Vector2D;
+import utils.PlayerUtils;
 
 
-public class Forward extends Thread {
+public class Farward extends Thread {
 	private int LOOP_INTERVAL = 100; //0.1s
 	private PlayerCommander commander;
 	private PlayerPerception selfPerc;
 	private FieldPerception fieldPerc;
 	private MatchPerception matchPerc;
+	private ArrayList<Rectangle> myAreas;
 
-	public Forward(PlayerCommander player) {
+	public Farward(PlayerCommander player,long nextIteration) {
 		commander = player;
+		this.action(nextIteration);
 	}
-	@Override
-	public void run() {
-		System. out .println(">> Executando...");
-		long nextIteration = System.currentTimeMillis() + LOOP_INTERVAL;
-		updatePerceptions();
-		switch (selfPerc.getUniformNumber()) {
-		case 1:
-			actionGoalKeeper(nextIteration);
-			break ;
-		case 2:
-			actionBack(nextIteration, -1); // cima
-			break ;
-		case 3:
-			actionBack(nextIteration, 1); // baixo
-			break ;
-		case 4:
-			actionMinFielder(nextIteration, -1); // cima
-			break ;
-		case 5:
-			actionMinFielder(nextIteration, 0); // centro
-			break ;
-		case 6:
-			actionMinFielder(nextIteration, 1); // baixo
-			break ;
-		case 7:
-			actionForward(nextIteration);
-			break ;
-		default : break ;
+	private void action( long nextIteration) {
+		this.updatePerceptions();
+		double xInit=-9, yInit=0;
+		EFieldSide side = selfPerc.getSide();
+		Vector2D initPos = new Vector2D(xInit*side.value(), yInit);
+		Vector2D goalPos = new Vector2D(50*side.value(), 0);
+		Vector2D ballPos;
+		PlayerPerception pTemp;
+		while ( true ) {
+			updatePerceptions();
+			ballPos = fieldPerc.getBall().getPosition();
+			switch (matchPerc.getState()) {
+			case BEFORE_KICK_OFF :
+				commander.doMoveBlocking(xInit, yInit);
+				break ;
+			case PLAY_ON :
+				if (PlayerUtils.isPointsAreClose(selfPerc.getPosition(),
+						ballPos, 1)){
+					if (PlayerUtils.isPointsAreClose(ballPos, goalPos, 30)){
+						// chuta para o gol
+						kickToPoint(goalPos, 100);
+					} else {
+						// conduz para o gol
+						kickToPoint(goalPos, 25);
+					}
+				} else {
+					pTemp = PlayerUtils.getClosestTeammatePoint(this.fieldPerc,ballPos,
+							side, 3);
+					if (pTemp != null &&
+							pTemp.getUniformNumber() == selfPerc
+							.getUniformNumber()){
+						// pega a bola
+						dash(ballPos);
+					} else if (!PlayerUtils.isPointsAreClose(selfPerc
+							.getPosition(),initPos, 3)){
+						// recua
+						dash(initPos);
+					} else {
+						// olha para a bola
+						turnToPoint(ballPos);
+					}
+				}
+				break ;
+				/* Todos os estados da partida */
+			default :
+				break ;
+			}
 		}
-
 	}
+	
 
 	private void updatePerceptions() {
 		PlayerPerception newSelf =
