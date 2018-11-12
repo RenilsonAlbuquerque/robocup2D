@@ -16,6 +16,7 @@ public class PlayerUtils {
 			Vector2D point, double margin){
 		return reference.distanceTo(point) <= margin;
 	}
+	
 	public static PlayerPerception searchNearbyEnemy(FieldPerception fieldPerc, EFieldSide side,Vector2D point,double margin){
 		ArrayList<PlayerPerception> lp = fieldPerc.getTeamPlayers((side == EFieldSide.LEFT) ? EFieldSide.RIGHT:  EFieldSide.LEFT );
 		PlayerPerception np = null ;

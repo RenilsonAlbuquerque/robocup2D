@@ -49,7 +49,7 @@ public class DefensiveMidFielder extends Thread {
 	private void dash(Vector2D point){
 		if (selfPerc.getPosition().distanceTo(point) <= 1) return ;
 		if (!isAlignToPoint(point, 15)) turnToPoint(point);
-		commander.doDashBlocking(70);
+		commander.doDashBlocking(60);
 	}
 
 	private void kickToPoint(Vector2D point, double intensity){
@@ -90,12 +90,17 @@ public class DefensiveMidFielder extends Thread {
 				commander.doMoveBlocking(xInit, yInit);
 				break ;
 			case PLAY_ON :
-				if(this.teamHasBall()){ // meu time tem a bola?
+				if(this.selfPerc.getState() == EPlayerState.HAS_BALL) {
+					kickToPoint(PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 30).getPosition(), 30);
+				}
+				if(this.teamIsAtc()){ // meu time tem a bola?
 					if(this.selfPerc.getState() == EPlayerState.HAS_BALL){ //eu estou com a bola?
 						//toca pra alguém desmarcado
-						kickToPoint(PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 5).getPosition(), 30);
+						//kickToPoint(PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 30).getPosition(), 30);
+						
 					}else{
 						//this.freeFromMark(initPos);
+						System.out.println(side + " DMF atacking");
 						this.atack(initPos,atackArea);
 					}
 				}else{
@@ -120,12 +125,15 @@ public class DefensiveMidFielder extends Thread {
 				this.dash(fieldPerc.getBall().getPosition());
 			}else {
 				if(side.value() == 1) {
-					this.dash(new Vector2D(-36,fieldPerc.getBall().getPosition().getY()));
+					this.dash(new Vector2D(fieldPerc.getBall().getPosition().getX() - 6,fieldPerc.getBall().getPosition().getY()));
 				}else
-					this.dash(new Vector2D(36,fieldPerc.getBall().getPosition().getY()));
+					this.dash(new Vector2D(fieldPerc.getBall().getPosition().getX() + 6,fieldPerc.getBall().getPosition().getY()));
 			}
 		}else {
-			this.dash(originalPosition);
+			if(this.iAmTheLastPlayer())
+				this.dash(this.fieldPerc.getBall().getPosition());
+			else
+				this.dash(originalPosition);
 		}
 		
 	}
@@ -140,13 +148,13 @@ public class DefensiveMidFielder extends Thread {
 	private void atack(Vector2D originalPosition,Rectangle atackArea) {
 		
 			if(this.selfPerc.getSide() == EFieldSide.LEFT) {
-				if(this.fieldPerc.getBall().getPosition().getX() > 0) {
+				if(this.fieldPerc.getBall().getPosition().getX() > 7) {
 					System.out.println("Left DMF atacking");
 					this.dash(new Vector2D(10,0));
 				}else
 					this.dash(originalPosition);
 			}else {
-				if(this.fieldPerc.getBall().getPosition().getX() < 0) {
+				if(this.fieldPerc.getBall().getPosition().getX() < -7) {
 					System.out.println("Right DMF atacking");
 					this.dash(new Vector2D(-10,0));
 				}else
@@ -181,10 +189,32 @@ public class DefensiveMidFielder extends Thread {
 		return true;
 	}
 	private boolean iHaveTheBall() {
-		return this.selfPerc.getPosition().distanceTo(fieldPerc.getBall().getPosition()) < 2;
+		if(this.selfPerc.getPosition().distanceTo(fieldPerc.getBall().getPosition()) < 2) {
+			this.selfPerc.setState(EPlayerState.HAS_BALL);
+			return true;
+		}
+		return false;
 		
 	}
-
+	private boolean teamIsAtc() {
+		if(this.selfPerc.getSide().equals(EFieldSide.LEFT)) {
+			if(this.fieldPerc.getBall().getPosition().getX() >= 20) {
+				return true;
+			}else {
+				//System.out.println("Left : "+ (this.teamHasBall() && this.fieldPerc.getBall().getPosition().getX() >= -10));
+				return this.teamHasBall() && this.fieldPerc.getBall().getPosition().getX() >= -10;
+			}
+			
+		}else{
+			if(this.fieldPerc.getBall().getPosition().getX() <= 20) {
+				return true;
+			}else{
+				//System.out.println("Right : "+ (this.teamHasBall() && this.fieldPerc.getBall().getPosition().getX() <= 10));
+				return this.teamHasBall() && this.fieldPerc.getBall().getPosition().getX() <= 10;
+			}
+			
+		}
+	}
 
 }
 /*
