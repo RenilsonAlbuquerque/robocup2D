@@ -1,7 +1,7 @@
 package FPF.team.Ibis.players;
 
 import java.awt.Rectangle;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 
 import simple_soccer_lib.PlayerCommander;
 import simple_soccer_lib.perception.FieldPerception;
@@ -41,11 +41,11 @@ public class Back extends Thread {
 		commander = player;
 		this.updatePerceptions();
 		this.xDef=-36;
-		this.yDef=10*pos;
+		this.yDef=6.5*pos;
 		this.xAtc=-30;
-		this.yAtc=10*pos;
+		this.yAtc=8*pos;
 		this.xEscan=-42;
-		this.yEscan=10*pos;
+		this.yEscan=7*pos;
 		this.xCob=-47;
 		this.yCob=7*pos*-1;
 		this.side = this.selfPerc.getSide();
@@ -85,7 +85,7 @@ public class Back extends Thread {
 	private void action( long nextIteration, int pos) {
 		//System.out.println("Cheguei");
 		this.updatePerceptions();
-		Vector2D ballPos;		
+		Vector2D ballPos;
 		while ( true ) {
 			updatePerceptions();
 			ballPos = fieldPerc.getBall().getPosition();
@@ -98,11 +98,13 @@ public class Back extends Thread {
 					//Chuta para longe do gol
 					if(ballPos.distanceTo(selfPerc.getPosition())<=1) {
 						//System.out.println("Chuta para longe "+selfPerc.getUniformNumber());
-						kickToPoint(goalPos,100);
+						kickToPoint(goalPos,150);
 					}else {
 						//Marca a bola
 						if(areaDef.contains(ballPos.getX(), ballPos.getY())) {
 							//System.out.println("Marca bola"+selfPerc.getUniformNumber());
+							if(selfPerc.getPosition().distanceTo(ballPos) > 5)
+								ballPos.setX(ballPos.getX()+(-3*side.value()));
 							this.dash(ballPos);
 						}else {
 							//Cobertura
@@ -110,7 +112,7 @@ public class Back extends Thread {
 								//System.out.println("Cobertura "+selfPerc.getUniformNumber());
 								this.dash(cobPos);								
 							}else {
-								//System.out.println("Posiciona "+selfPerc.getUniformNumber());
+								//System.out.println("Posiciona defesa"+selfPerc.getUniformNumber()+" Time"+selfPerc.getTeam());
 								this.dash(defPos);
 							}							
 						}
@@ -126,46 +128,56 @@ public class Back extends Thread {
 					}
 				}
 				break ;
-			case GOAL_KICK_RIGHT :
-				commander.doMoveBlocking(xDef, yDef);
+			case KICK_OFF_RIGHT :
+				//commander.doMoveBlocking(xDef, yDef);
+				dash(defPos);
 				break ;
-			case GOAL_KICK_LEFT :
-				commander.doMoveBlocking(xDef, yDef);
+			case KICK_OFF_LEFT :
+				dash(defPos);
+				//commander.doMoveBlocking(xDef, yDef);
+				break ;
+			case AFTER_GOAL_RIGHT :
+				//commander.doMoveBlocking(xDef, yDef);
+				dash(defPos);
+				break ;
+			case AFTER_GOAL_LEFT :
+				dash(defPos);
+				//commander.doMoveBlocking(xDef, yDef);
 				break ;
 			case KICK_IN_RIGHT :
 				if(selfPerc.getSide().equals(EFieldSide.RIGHT)) {
-					if(pos == -1 && fieldPerc.getBall().getPosition().getX() >=36 && fieldPerc.getBall().getPosition().getY() <= -33){
+					if(pos != -1 && fieldPerc.getBall().getPosition().getX() >=36 && fieldPerc.getBall().getPosition().getY() <= -1){
 						if(ballPos.distanceTo(selfPerc.getPosition())<=1) {
-							kickToPoint(fieldPerc.getTeamPlayer(side, 4).getPosition() ,50);
+							kickToPoint(fieldPerc.getTeamPlayer(side, 4).getPosition(),250);
 						}else {
 							commander.doMoveBlocking(fieldPerc.getBall().getPosition().getX(),fieldPerc.getBall().getPosition().getY());
-							//dash(fieldPerc.getBall().getPosition());
+							dash(fieldPerc.getBall().getPosition());
 						}			
 						
-					}else if(fieldPerc.getBall().getPosition().getX() >= 36 && fieldPerc.getBall().getPosition().getY() >= 33){
+					}else if(pos == -1 && fieldPerc.getBall().getPosition().getX() >= 36 && fieldPerc.getBall().getPosition().getY() >= 1){
 						if(ballPos.distanceTo(selfPerc.getPosition())<=1) {
-							kickToPoint(fieldPerc.getTeamPlayer(side, 4).getPosition() ,50);
+							kickToPoint(fieldPerc.getTeamPlayer(side, 4).getPosition(),250);
 						}else {
 							commander.doMoveBlocking(fieldPerc.getBall().getPosition().getX(),fieldPerc.getBall().getPosition().getY());
-							//dash(fieldPerc.getBall().getPosition());
+							dash(fieldPerc.getBall().getPosition());
 						}						
 					}
 				}
 				break ;
 			case KICK_IN_LEFT :
 				if(selfPerc.getSide().equals(EFieldSide.LEFT)) {
-					if(pos == -1 && fieldPerc.getBall().getPosition().getX() <= -36 && fieldPerc.getBall().getPosition().getY() <= -33){
+					if(pos == -1 && fieldPerc.getBall().getPosition().getX() <= -36 && fieldPerc.getBall().getPosition().getY() <= -1){
 						if(ballPos.distanceTo(selfPerc.getPosition())<=1) {
-							kickToPoint(fieldPerc.getTeamPlayer(side, 4).getPosition() ,50);
-						}else {
+							kickToPoint(fieldPerc.getTeamPlayer(side, 4).getPosition() ,250);
+						}else{
 							//System.out.println("Aqui");
 							//commander.doMoveBlocking(fieldPerc.getBall().getPosition().getX(),fieldPerc.getBall().getPosition().getY());
 							this.dash(fieldPerc.getBall().getPosition());
 						}			
 						
-					}else if(fieldPerc.getBall().getPosition().getX() <= -36 && fieldPerc.getBall().getPosition().getY() >= 33){
+					}else if(pos != -1 && fieldPerc.getBall().getPosition().getX() <= -36 && fieldPerc.getBall().getPosition().getY() >= 1){
 						if(ballPos.distanceTo(selfPerc.getPosition())<=1) {
-							kickToPoint(fieldPerc.getTeamPlayer(side, 4).getPosition() ,50);
+							kickToPoint(fieldPerc.getTeamPlayer(side, 4).getPosition() ,250);
 						}else {
 							//System.out.println("Aqui");
 							//commander.doMoveBlocking(fieldPerc.getBall().getPosition().getX(),fieldPerc.getBall().getPosition().getY());
@@ -176,13 +188,19 @@ public class Back extends Thread {
 				}
 				break ;
 			case CORNER_KICK_LEFT :
-				if(selfPerc.getSide().equals(EFieldSide.LEFT))
-					dash(escanPos);
-				break ;
-			case CORNER_KICK_RIGHT :
 				if(selfPerc.getSide().equals(EFieldSide.RIGHT))
 					dash(escanPos);
 				break ;
+			case CORNER_KICK_RIGHT :
+				if(selfPerc.getSide().equals(EFieldSide.LEFT))
+					dash(escanPos);
+				break ;
+			case GOAL_KICK_RIGHT :
+				dash(defPos);
+				break;
+			case GOAL_KICK_LEFT :
+				dash(defPos);	
+				break;
 				/* Todos os estados da partida */
 			default :
 				//System.out.println(matchPerc.getState());
@@ -212,8 +230,19 @@ public class Back extends Thread {
 
 	private void dash(Vector2D point){
 		if (selfPerc.getPosition().distanceTo(point) <= 1) return ;
-		if (!isAlignToPoint(point, 15)) turnToPoint(point);
-		commander.doDashBlocking(70);
+		if (!isAlignToPoint(point, 10)) turnToPoint(point);
+		if(selfPerc.getPosition().distanceTo(point) < 1.5) {
+			commander.doDashBlocking(65);
+		}else if(selfPerc.getPosition().distanceTo(point) < 2) {
+			commander.doDashBlocking(75);			
+		}else if(selfPerc.getPosition().distanceTo(point) < 3){
+			commander.doDashBlocking(80);					
+		}else if(selfPerc.getPosition().distanceTo(point) < 5){
+			commander.doDashBlocking(90);					
+		}else{
+			commander.doDashBlocking(100);
+		}
+		
 	}
 
 	private void kickToPoint(Vector2D point, double intensity){
@@ -231,12 +260,12 @@ public class Back extends Thread {
 		return angle < margin && angle > margin*(-1);
 	}
 
-	private boolean isPointsAreClose(Vector2D reference,
+	/*private boolean isPointsAreClose(Vector2D reference,
 			Vector2D point, double margin){
 		return reference.distanceTo(point) <= margin;
-	}
+	}*/
 
-	private PlayerPerception getClosestPlayerPoint(Vector2D point, EFieldSide side, double margin){
+	/*private PlayerPerception getClosestPlayerPoint(Vector2D point, EFieldSide side, double margin){
 		ArrayList<PlayerPerception> lp = fieldPerc.getTeamPlayers(side);
 		PlayerPerception np = null ;
 		if (lp != null && !lp.isEmpty()){
@@ -258,81 +287,11 @@ public class Back extends Thread {
 			}
 		}
 		return np;
-	}
-	
-	
-	private void defend(Vector2D originalPosition) {
-		if(this.selfPerc.getPosition().distanceTo(originalPosition) > 20) {
-			this.dash(originalPosition);
-		}else {
-			//Estou no raio de ação da jogada?
-			if(PlayerUtils.isPointsAreClose(selfPerc.getPosition(),this.fieldPerc.getBall().getPosition(), 30)) {
-				//Sou o marcador mais próximo?
-				if(iAmTheLastPlayer()) {
-					//tenta roubar a bola
-					this.dash(this.fieldPerc.getBall().getPosition());
-				}else{
-					//faz a cobertura
-					this.dash(originalPosition);
-				}
-			}else{ //procuro alguém próximo pra marcar
-				Vector2D closestPlayer = PlayerUtils.searchNearbyEnemy(fieldPerc, this.selfPerc.getSide(), this.selfPerc.getPosition(), 3).getPosition();
-				if(this.selfPerc.getPosition().distanceTo(closestPlayer) <= 2)
-					this.dash(PlayerUtils. searchNearbyEnemy(fieldPerc, this.selfPerc.getSide(), this.selfPerc.getPosition(), 5).getPosition());
-				else
-					this.dash(originalPosition);
-			}
-		}
-		
-	}
-	private boolean iAmTheLastPlayer() {
-		double distance = this.selfPerc.getPosition().distanceTo(this.fieldPerc.getBall().getPosition());
-		for(PlayerPerception p: this.fieldPerc.getTeamPlayers(this.selfPerc.getSide())) {
-			if(p.getPosition().distanceTo(this.fieldPerc.getBall().getPosition()) < distance ) {
-				return false;
-			}
-			
-		}
-		return true;
-	}
-	private void freeFromMark(Vector2D playerOriginalPosition){
-		PlayerPerception marker = PlayerUtils.searchNearbyEnemy(this.fieldPerc, this.selfPerc.getSide(), this.selfPerc.getPosition(), 4);
-		if(marker.getPosition().distanceTo(this.selfPerc.getPosition()) <= 10){
-			this.dash(playerOriginalPosition);
-		}
-	}
-	
-	
-	private void atack(Vector2D originalPosition) {
-		
-		
-			if(this.selfPerc.getSide() == EFieldSide.LEFT) {
-				if(this.fieldPerc.getBall().getPosition().getX() > 10 ) {
-					this.dash(new Vector2D(0 - 2,originalPosition.getY()));
-				}
-				else {
-					this.dash(originalPosition);
-				}
-			}else {
-				if(this.fieldPerc.getBall().getPosition().getX() < - 10 ) {
-					this.dash(new Vector2D(0 +2, originalPosition.getY()));
-				}else {
-					this.dash(originalPosition);
-				}
-			}
-	
-	}
-	/*private boolean teamHasBall() {
-		for(PlayerPerception p: this.fieldPerc.getTeamPlayers(this.selfPerc.getSide())) {
-			if(p.getState().equals(EPlayerState.HAS_BALL))
-				return true;
-		}
-		return false;
 	}*/
-	
+		
 	private boolean teamHasBall() {
 		double smallerDistanceMyTeam = 2000;
-		double smallerDistanceOutherTeam = 200;
+		double smallerDistanceOutherTeam = 2000;
 		if(this.selfPerc.getSide().equals(EFieldSide.LEFT)) {			
 			for(PlayerPerception p: this.fieldPerc.getTeamPlayers(EFieldSide.LEFT)) {
 				if(p.getPosition().distanceTo(this.fieldPerc.getBall().getPosition()) < smallerDistanceMyTeam)
@@ -363,28 +322,18 @@ public class Back extends Thread {
 				return true;
 			}else {
 				//System.out.println("Left : "+ (this.teamHasBall() && this.fieldPerc.getBall().getPosition().getX() >= -10));
-				return this.teamHasBall() && this.fieldPerc.getBall().getPosition().getX() >= -10;
+				return this.teamHasBall() && this.fieldPerc.getBall().getPosition().getX() >= -2;
 			}
 			
 		}else{
-			if(this.fieldPerc.getBall().getPosition().getX() <= 20) {
+			if(this.fieldPerc.getBall().getPosition().getX() <= -20) {
 				return true;
 			}else{
 				//System.out.println("Right : "+ (this.teamHasBall() && this.fieldPerc.getBall().getPosition().getX() <= 10));
-				return this.teamHasBall() && this.fieldPerc.getBall().getPosition().getX() <= 10;
+				return this.teamHasBall() && this.fieldPerc.getBall().getPosition().getX() <= 2;
 			}
 			
 		}
 	}
 	
-	private PlayerPerception hasAdversaryInMyArea() {
-		for(PlayerPerception p: this.fieldPerc.getTeamPlayers(EFieldSide.invert(selfPerc.getSide()))) {
-			if(this.areaDef.contains(p.getPosition().getX(), p.getPosition().getY()))
-				return p;
-		}
-		return null;
-	}
-
-	
-
 }

@@ -11,7 +11,7 @@ public class MainIbis {
 		IbisTeam team1 = new IbisTeam("Santa");
 		IbisTeam team2 = new IbisTeam("Sprot");
 		
-		team1.launchTeamAndServer();
+		team1.launchTeamAndServer();;
 		team2.launchTeam();
 	}
 	

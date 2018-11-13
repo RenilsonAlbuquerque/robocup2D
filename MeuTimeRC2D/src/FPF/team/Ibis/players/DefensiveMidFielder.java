@@ -100,7 +100,7 @@ public class DefensiveMidFielder extends Thread {
 						
 					}else{
 						//this.freeFromMark(initPos);
-						System.out.println(side + " DMF atacking");
+						//System.out.println(side + " DMF atacking");
 						this.atack(initPos,atackArea);
 					}
 				}else{
@@ -149,13 +149,13 @@ public class DefensiveMidFielder extends Thread {
 		
 			if(this.selfPerc.getSide() == EFieldSide.LEFT) {
 				if(this.fieldPerc.getBall().getPosition().getX() > 7) {
-					System.out.println("Left DMF atacking");
+					//System.out.println("Left DMF atacking");
 					this.dash(new Vector2D(10,0));
 				}else
 					this.dash(originalPosition);
 			}else {
 				if(this.fieldPerc.getBall().getPosition().getX() < -7) {
-					System.out.println("Right DMF atacking");
+					//System.out.println("Right DMF atacking");
 					this.dash(new Vector2D(-10,0));
 				}else
 					this.dash(originalPosition);	
