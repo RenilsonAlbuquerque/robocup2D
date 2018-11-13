@@ -122,7 +122,7 @@ public class Back extends Thread {
 					if(this.selfPerc.getState() == EPlayerState.HAS_BALL){ //eu estou com a bola?
 						//toca pra alguém desmarcado
 						//System.out.println("Toca "+selfPerc.getUniformNumber());
-						kickToPoint(PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 10).getPosition(), 10);
+						kickToPoint(PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 10).getPosition(), 50);
 					}else{
 						this.dash(atcPos);
 					}
@@ -161,7 +161,11 @@ public class Back extends Thread {
 							commander.doMoveBlocking(fieldPerc.getBall().getPosition().getX(),fieldPerc.getBall().getPosition().getY());
 							dash(fieldPerc.getBall().getPosition());
 						}						
+					}else {
+						this.dash(defPos);
 					}
+				}else {
+					this.dash(defPos);
 				}
 				break ;
 			case KICK_IN_LEFT :
@@ -184,7 +188,11 @@ public class Back extends Thread {
 							this.dash(fieldPerc.getBall().getPosition());
 						}
 						
+					}else {
+						this.dash(defPos);
 					}
+				}else {
+					this.dash(defPos);
 				}
 				break ;
 			case CORNER_KICK_LEFT :
@@ -231,14 +239,16 @@ public class Back extends Thread {
 	private void dash(Vector2D point){
 		if (selfPerc.getPosition().distanceTo(point) <= 1) return ;
 		if (!isAlignToPoint(point, 10)) turnToPoint(point);
-		if(selfPerc.getPosition().distanceTo(point) < 1.5) {
-			commander.doDashBlocking(65);
+		if(selfPerc.getPosition().distanceTo(point) <= 1.5) {
+			commander.doDashBlocking(55);
 		}else if(selfPerc.getPosition().distanceTo(point) < 2) {
+			commander.doDashBlocking(65);			
+		}else if(selfPerc.getPosition().distanceTo(point) < 3) {
 			commander.doDashBlocking(75);			
-		}else if(selfPerc.getPosition().distanceTo(point) < 3){
-			commander.doDashBlocking(80);					
+		}else if(selfPerc.getPosition().distanceTo(point) < 4){
+			commander.doDashBlocking(85);					
 		}else if(selfPerc.getPosition().distanceTo(point) < 5){
-			commander.doDashBlocking(90);					
+			commander.doDashBlocking(95);					
 		}else{
 			commander.doDashBlocking(100);
 		}
