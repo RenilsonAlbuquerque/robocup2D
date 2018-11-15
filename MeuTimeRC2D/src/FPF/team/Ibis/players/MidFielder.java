@@ -9,13 +9,11 @@ import simple_soccer_lib.perception.FieldPerception;
 import simple_soccer_lib.perception.MatchPerception;
 import simple_soccer_lib.perception.PlayerPerception;
 import simple_soccer_lib.utils.EFieldSide;
-import simple_soccer_lib.utils.EPlayerState;
 import simple_soccer_lib.utils.Vector2D;
 import utils.PlayerUtils;
 
 
 public class MidFielder extends Thread {
-	private int LOOP_INTERVAL = 100; //0.1s
 	private PlayerCommander commander;
 	private PlayerPerception selfPerc;
 	private FieldPerception fieldPerc;
@@ -38,31 +36,7 @@ public class MidFielder extends Thread {
 		this.goalPos = new Vector2D(50*side.value(), 0);
 		this.initPos =	new Vector2D(xInit*side.value(), yInit*side.value());
 		this.pos = pos;
-		/*
-		if(pos != -1) {
-			this.defenseArea = this.side == EFieldSide.LEFT ?
-					new Rectangle(-53, 0, 36, 34):
-						new Rectangle(17, -34, 36, 34);
-			this.atackArea = this.side == EFieldSide.LEFT ?
-					new Rectangle(-53, -25, 21, 25):
-						new Rectangle(32, 0, 21, 25);
-		}else {
-			this.defenseArea = this.side == EFieldSide.LEFT ?
-					new Rectangle(-53, -34, 36, 34):
-						new Rectangle(17, 0, 36, 34);
-			this.atackArea = this.side == EFieldSide.LEFT ?
-					new Rectangle(-53, 0, 21, 25):
-						new Rectangle(32, -25, 21, 25);
-		}
-		*/
-		/*
-		defenseArea = side == EFieldSide.LEFT ?
-				new Rectangle(-36, -16, 26, 34):
-					new Rectangle(16, -16, 26, 34);
-		atackArea = side == EFieldSide.LEFT ?
-				new Rectangle(-16, -16, 26, 34):
-					new Rectangle(-16, -16, 26, 34);
-		*/
+		
 		if(pos  == 1) {
 			this.defenseArea = this.side == EFieldSide.LEFT ?
 					new Rectangle(-27, 0, 27, 34):
@@ -156,14 +130,7 @@ public class MidFielder extends Thread {
 		this.updatePerceptions();
 		Vector2D ballPos;
 		
-		/*
-		Rectangle defenseArea = side == EFieldSide.LEFT ?
-				new Rectangle(-20, (side.value() == 1 )? -34: 0 , 26, 34):
-					new Rectangle(-10, (side.value() == 1 )? -34: 0, 26, 34);
-		Rectangle atackArea = side == EFieldSide.LEFT ?
-				new Rectangle(-16, -16, 26, 34):
-					new Rectangle(-16, -16, 26, 34);
-			*/	
+
 		while ( true ) {
 			this.updatePerceptions();
 			ballPos = fieldPerc.getBall().getPosition();
@@ -285,40 +252,16 @@ public class MidFielder extends Thread {
 				// conduz para o gol
 				kickToPoint(goalPos, 20);
 			}
-		}else {
-			this.dash(new Vector2D(this.atackArea.getCenterX(),this.atackArea.getCenterY()));
-		}
-		/*
-		if (PlayerUtils.isPointsAreClose(selfPerc.getPosition(),
-				this.fieldPerc.getBall().getPosition(), 1)){
-			if (PlayerUtils.isPointsAreClose(this.fieldPerc.getBall().getPosition(), goalPos, 30)){
-				// chuta para o gol
-				kickToPoint(goalPos, 100);
-			} else {
-				// conduz para o gol
-				kickToPoint(goalPos, 20);
+		}else  {
+			if(this.atackArea.contains(this.selfPerc.getPosition().getX(),this.selfPerc.getPosition().getY())
+					&& this.iAmTheLastPlayer()) {
+				this.dash(this.fieldPerc.getBall().getPosition());
 			}
-		} else {
-			
-			PlayerPerception pTemp = PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.fieldPerc.getBall().getPosition(),
-					side, 3);
-			if (this.selfPerc != null &&
-					pTemp.getUniformNumber() == selfPerc
-					.getUniformNumber()){
-				// pega a bola
-				dash(this.fieldPerc.getBall().getPosition());
-			} else if (!PlayerUtils.isPointsAreClose(selfPerc
-					.getPosition(),initPos, 3)){
-				// recua
-				dash(initPos);
-			} else {
-				// olha para a bola
-				turnToPoint(this.fieldPerc.getBall().getPosition());
+			else {
+				this.dash(new Vector2D(this.atackArea.getCenterX(),this.atackArea.getCenterY()));
 			}
 			
-			this.dash(this.goalPos);
 		}
-		*/
 	}
 	private boolean teamHasBall() {
 		double smallerDistanceMyTeam = 2000;
