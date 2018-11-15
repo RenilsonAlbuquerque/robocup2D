@@ -117,6 +117,16 @@ public class Farward extends Thread {
 				break ;
 			case BEFORE_KICK_OFF :
 				commander.doMoveBlocking(xInit, yInit);
+				if(selfPerc.getSide().equals(EFieldSide.RIGHT)) {
+					if(ballPos.distanceTo(selfPerc.getPosition())<=1){
+						if (!(this.isAlignToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition(), 1))) {
+							this.turnToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition());
+						}else {
+							kickToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition() ,80);
+						}
+					}
+					dash(this.ballPos);
+				}
 				break ;
 				/* Todos os estados da partida */
 			default :

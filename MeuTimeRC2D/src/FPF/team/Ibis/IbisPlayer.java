@@ -35,10 +35,10 @@ public class IbisPlayer extends Thread {
 			new Back(commander,nextIteration, -1); // baixo
 			break ;
 		case 4:
-			new DefensiveMidFielder(commander,nextIteration); // cima
+			new DefensiveMidFielder(commander,nextIteration); // centro
 			break ;
 		case 5:
-			new MidFielder(commander,nextIteration,1); // centro
+			new MidFielder(commander,nextIteration,1); // cima
 			break ;
 		case 6:
 			new MidFielder(commander,nextIteration,-1); // baixo
