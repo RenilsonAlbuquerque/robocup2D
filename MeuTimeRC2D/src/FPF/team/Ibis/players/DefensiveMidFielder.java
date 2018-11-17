@@ -3,6 +3,7 @@ package FPF.team.Ibis.players;
 
 import java.awt.Rectangle;
 //import java.util.ArrayList;
+import java.util.ArrayList;
 
 import simple_soccer_lib.PlayerCommander;
 import simple_soccer_lib.perception.FieldPerception;
@@ -36,6 +37,7 @@ public class DefensiveMidFielder extends Thread {
 	private Vector2D cobPos;
 	private Vector2D escanPos;
 	private Vector2D goalPos;
+	private PlayerPerception tocarPara;
 	//private ArrayList<Rectangle> myAreas;
 
 	public DefensiveMidFielder(PlayerCommander player, long nextIteration) {
@@ -83,9 +85,19 @@ public class DefensiveMidFielder extends Thread {
 			case PLAY_ON :
 				if(!(this.teamIsAtc())){ // meu time não tem a bola?
 					//Chuta para longe do gol
-					if(ballPos.distanceTo(selfPerc.getPosition())<=1) {
-						//System.out.println("Chuta para longe "+selfPerc.getUniformNumber());
+					if(ballPos.distanceTo(selfPerc.getPosition())<=1 && ballPos.getX()<32*side.value()) {
+						System.out.println("Chuta para longe "+selfPerc.getUniformNumber());
 						kickToPoint(goalPos,150);
+					}if(ballPos.distanceTo(selfPerc.getPosition())<=1){
+						this.tocarPara = this.getBestPlayerToWork();
+						System.out.println("Jogador "+selfPerc.getTeam()+" Toca para "+tocarPara.getUniformNumber());
+						if(!(this.isAlignToPoint(this.tocarPara.getPosition(), 0))) {
+							turnToPoint(this.tocarPara.getPosition());
+						}							
+						if(ballPos.distanceTo(this.tocarPara.getPosition())<20)
+							kickToPoint(this.tocarPara.getPosition(), 10*ballPos.distanceTo(this.getBestPlayerToWork().getPosition()));
+						else
+							kickToPoint(this.tocarPara.getPosition(), 5*ballPos.distanceTo(this.getBestPlayerToWork().getPosition()));
 					}else {
 						//Marca a bola
 						if(areaDef.contains(ballPos.getX(), ballPos.getY())) {
@@ -298,6 +310,15 @@ public class DefensiveMidFielder extends Thread {
 			}
 			
 		}
+	}
+	
+	private PlayerPerception getBestPlayerToWork() {
+		if(selfPerc.getPosition().distanceTo(fieldPerc.getTeamPlayer(side, 5).getPosition()) < selfPerc.getPosition().distanceTo(fieldPerc.getTeamPlayer(side, 6).getPosition())){
+			return fieldPerc.getTeamPlayer(side, 5);
+		}else {
+			return fieldPerc.getTeamPlayer(side, 6);
+		}
+		
 	}
 
 }
