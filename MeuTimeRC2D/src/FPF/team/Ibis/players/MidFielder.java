@@ -39,18 +39,18 @@ public class MidFielder extends Thread {
 		
 		if(pos  == 1) {
 			this.defenseArea = this.side == EFieldSide.LEFT ?
-					new Rectangle(-27, 0, 27, 34):
-						new Rectangle(0, -34, 27, 34);
+					new Rectangle(-27, 6, 27, 28):
+						new Rectangle(0, -34, 27, 28);
 			this.atackArea = this.side == EFieldSide.LEFT ?
-					new Rectangle(0, 0, 53, 34):
-						new Rectangle(-53, -34, 53, 34);
+					new Rectangle(0, 6, 53, 28):
+						new Rectangle(-53, -34, 53, 28);
 		}else {
 			this.defenseArea = this.side == EFieldSide.LEFT ?
-					new Rectangle(-27, -34, 27, 34):
-					new Rectangle(0, 0, 27, 34);
+					new Rectangle(-27, -34, 27, 28):
+					new Rectangle(0, 6, 27, 28);
 			this.atackArea = this.side == EFieldSide.LEFT ?
-					new Rectangle(0, -34, 53, 34):
-						new Rectangle(-53, 0, 53, 34);
+					new Rectangle(0, -34, 53, 28):
+						new Rectangle(-53, 6, 53, 28);
 		}
 		this.action(nextIteration, pos);
 	}
@@ -139,12 +139,35 @@ public class MidFielder extends Thread {
 				commander.doMoveBlocking(this.xInit, this.yInit);
 				break ;
 			case PLAY_ON :
-				//this.defend(initPos);
-				if(this.teamHasBall()){ // meu time tem a bola?
-					this.atack(this.initPos);
-				}else{
-					this.defend(initPos);
+				if(this.selfPerc.getPosition().distanceTo(ballPos) <=1) {
+					this.atack(initPos);
 				}
+				else if(this.defenseArea.contains(ballPos.getX(), ballPos.getY())) {
+					if(!this.teamHasBall() || this.selfPerc.getPosition().distanceTo(ballPos) <=17) {
+						this.dash(ballPos);
+					}else {
+						this.dash(new Vector2D(0, ballPos.getY()));
+					}
+				}
+				else if(atackArea.contains(ballPos.getX(), ballPos.getY())) {
+						if(this.selfPerc.getPosition().getX() <= (36 * this.side.value()) && ballPos.getX() <= (36 * this.side.value())) {
+							this.dash(ballPos);
+						}
+						else if(this.selfPerc.getPosition().distanceTo(ballPos) <= 12)  {
+							this.dash(ballPos);
+						}
+						else { 
+							this.dash(new Vector2D(0,ballPos.getY()));
+						}
+				}else {
+					if(teamHasBall()) {
+						this.dash(new Vector2D(0,initPos.getY()));
+					}else
+						this.dash(initPos);
+					
+				}
+					
+				
 				break ;
 			case GOAL_KICK_RIGHT :
 				dash(initPos);

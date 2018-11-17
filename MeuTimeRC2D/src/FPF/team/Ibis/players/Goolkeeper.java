@@ -112,8 +112,8 @@ public class Goolkeeper {
 								this.kickToPoint(new Vector2D(0,0), 500);
 							}else if(currentBallPos.distanceTo(previousBallPos) >= 2.5) {
 								previousUnchangedPosition = new Vector2D(currentBallPos.getX(),currentBallPos.getY());
-								currentBallPos.setX((52.71 - Math.abs(currentBallPos.getX()))  * this.selfPerc.getSide().value() * (-1) );
-								previousBallPos.setX((52.71 - Math.abs(previousBallPos.getX()))  * this.selfPerc.getSide().value() * (-1));
+								currentBallPos.setX((52 - Math.abs(currentBallPos.getX()))  * this.selfPerc.getSide().value() * (-1) );
+								previousBallPos.setX((52 - Math.abs(previousBallPos.getX()))  * this.selfPerc.getSide().value() * (-1));
 								
 								//System.out.println(" new Previous: (" +  previousBallPos.getX() + ","+ previousBallPos.getY() + ") "+
 									//	" Current: (" +  currentBallPos.getX() + ","+ currentBallPos.getY() + ")");
@@ -152,10 +152,9 @@ public class Goolkeeper {
 						
 							this.dash(currentBallPos);
 							if(this.selfPerc.getPosition().distanceTo(this.fieldPerc.getBall().getPosition()) <= 1) {
-								this.kickToPoint(PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), -3).getPosition(), -500);
-									
+								this.kickToPoint(PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), -3).getPosition(), -500);		
 							}
-							}
+						}
 						break;
 					case GOAL_KICK_LEFT :
 						
