@@ -7,7 +7,7 @@ import simple_soccer_lib.PlayerCommander;
 public class IbisTeam extends AbstractTeam {
 
 	public IbisTeam(String suffix) {
-		super("Time_" + suffix, 7, false);
+		super(suffix, 7, false);
 	}
 
 	@Override

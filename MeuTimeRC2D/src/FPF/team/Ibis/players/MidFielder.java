@@ -146,7 +146,7 @@ public class MidFielder extends Thread {
 					if(!this.teamHasBall() || this.selfPerc.getPosition().distanceTo(ballPos) <=17) {
 						this.dash(ballPos);
 					}else {
-						this.dash(new Vector2D(0, ballPos.getY()));
+						this.dash(new Vector2D(-2*side.value(), ballPos.getY()));
 					}
 				}
 				else if(atackArea.contains(ballPos.getX(), ballPos.getY())) {
@@ -157,11 +157,11 @@ public class MidFielder extends Thread {
 							this.dash(ballPos);
 						}
 						else { 
-							this.dash(new Vector2D(0,ballPos.getY()));
+							this.dash(new Vector2D(-2*side.value(),ballPos.getY()));
 						}
 				}else {
 					if(teamHasBall()) {
-						this.dash(new Vector2D(0,initPos.getY()));
+						this.dash(new Vector2D(-2*side.value(),initPos.getY()));
 					}else
 						this.dash(initPos);
 					

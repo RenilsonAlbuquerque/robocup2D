@@ -35,6 +35,7 @@ public class Back extends Thread {
 	private Vector2D cobPos;
 	private Vector2D escanPos;
 	private Vector2D goalPos;
+	private PlayerPerception tocarPara;
 	//private ArrayList<Rectangle> myAreas;
 
 	public Back(PlayerCommander player, long nextIteration,int pos) {
@@ -53,7 +54,7 @@ public class Back extends Thread {
 		this.atcPos = new Vector2D(this.xAtc*this.side.value(), this.yAtc*this.side.value());
 		this.cobPos = new Vector2D(this.xCob*this.side.value(), this.yCob*this.side.value());
 		this.escanPos = new Vector2D(this.xEscan*this.side.value(), this.yEscan*this.side.value());
-		this.goalPos = new Vector2D(50*side.value(), 0);
+		this.goalPos = new Vector2D(50*side.value(), 0);  
 		if(pos != -1) {
 			this.areaDef = this.side == EFieldSide.LEFT ?
 					new Rectangle(-53, 0, 36, 34):
@@ -94,12 +95,35 @@ public class Back extends Thread {
 				commander.doMoveBlocking(this.xDef, this.yDef);
 				break ;
 			case PLAY_ON :
+				if(selfPerc.getPosition().distanceTo(ballPos)<5) {
+					this.dash(ballPos);
+				}
 				if(!(this.teamIsAtc())){ // meu time não tem a bola?
 					//Chuta para longe do gol
-					if(ballPos.distanceTo(selfPerc.getPosition())<=1) {
+					if(ballPos.distanceTo(selfPerc.getPosition())<=1 && (((ballPos.getX()<-32)&&(selfPerc.getSide().value() == 1)) || ((ballPos.getX()>32)&&(selfPerc.getSide().value() == -1)))) {
 						//System.out.println("Chuta para longe "+selfPerc.getUniformNumber());
 						kickToPoint(goalPos,150);
-					}else {
+					}else if(ballPos.distanceTo(selfPerc.getPosition())<=1){
+						if(pos != -1) {
+							this.tocarPara = fieldPerc.getTeamPlayer(side, 5);
+						}else {
+							this.tocarPara = fieldPerc.getTeamPlayer(side, 6);
+						}
+						//System.out.println("Jogador "+selfPerc.getTeam()+" Toca para "+tocarPara.getUniformNumber() + tocarPara.getTeam());
+						turnToPoint(this.tocarPara.getPosition());
+						//kickToPoint(this.tocarPara.getPosition(), 4*ballPos.distanceTo(this.getBestPlayerToWork().getPosition()));
+						//System.out.println(selfPerc.getPosition().distanceTo(this.tocarPara.getPosition()));
+						if(selfPerc.getPosition().distanceTo(this.tocarPara.getPosition())<12) {
+							kickToPoint(this.tocarPara.getPosition(), 6*selfPerc.getPosition().distanceTo(this.tocarPara.getPosition()));
+						}else if(selfPerc.getPosition().distanceTo(this.tocarPara.getPosition())<30){
+							kickToPoint(this.tocarPara.getPosition(), 7*selfPerc.getPosition().distanceTo(this.tocarPara.getPosition()));
+						}/*else if(selfPerc.getPosition().distanceTo(this.tocarPara.getPosition())<30){
+							kickToPoint(this.tocarPara.getPosition(),7*selfPerc.getPosition().distanceTo(this.tocarPara.getPosition()));
+						}*/else {
+
+							kickToPoint(this.tocarPara.getPosition(),5*selfPerc.getPosition().distanceTo(this.tocarPara.getPosition()));
+						}
+						}else {
 						//Marca a bola
 						if(areaDef.contains(ballPos.getX(), ballPos.getY())) {
 							//System.out.println("Marca bola"+selfPerc.getUniformNumber());

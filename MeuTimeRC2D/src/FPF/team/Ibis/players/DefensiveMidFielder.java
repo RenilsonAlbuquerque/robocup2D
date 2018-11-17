@@ -85,19 +85,36 @@ public class DefensiveMidFielder extends Thread {
 			case PLAY_ON :
 				if(!(this.teamIsAtc())){ // meu time não tem a bola?
 					//Chuta para longe do gol
-					if(ballPos.distanceTo(selfPerc.getPosition())<=1 && ballPos.getX()<32*side.value()) {
+					if(ballPos.distanceTo(selfPerc.getPosition())<=1 && (((ballPos.getX()<-32)&&(selfPerc.getSide().value() == 1)) || ((ballPos.getX()>32)&&(selfPerc.getSide().value() == -1)))) {
 						System.out.println("Chuta para longe "+selfPerc.getUniformNumber());
 						kickToPoint(goalPos,150);
-					}if(ballPos.distanceTo(selfPerc.getPosition())<=1){
+					}else if(ballPos.distanceTo(selfPerc.getPosition())<=1){
 						this.tocarPara = this.getBestPlayerToWork();
-						System.out.println("Jogador "+selfPerc.getTeam()+" Toca para "+tocarPara.getUniformNumber());
-						if(!(this.isAlignToPoint(this.tocarPara.getPosition(), 0))) {
+						//Toca para meias
+						if(tocarPara != null) {
+							System.out.println("Jogador "+selfPerc.getTeam()+" Toca para "+tocarPara.getUniformNumber() + tocarPara.getTeam());
 							turnToPoint(this.tocarPara.getPosition());
-						}							
-						if(ballPos.distanceTo(this.tocarPara.getPosition())<20)
-							kickToPoint(this.tocarPara.getPosition(), 10*ballPos.distanceTo(this.getBestPlayerToWork().getPosition()));
-						else
-							kickToPoint(this.tocarPara.getPosition(), 5*ballPos.distanceTo(this.getBestPlayerToWork().getPosition()));
+							//kickToPoint(this.tocarPara.getPosition(), 4*ballPos.distanceTo(this.getBestPlayerToWork().getPosition()));
+							System.out.println(selfPerc.getPosition().distanceTo(this.tocarPara.getPosition()));
+							if(selfPerc.getPosition().distanceTo(this.tocarPara.getPosition())<15) {
+								kickToPoint(this.tocarPara.getPosition(), 5*selfPerc.getPosition().distanceTo(this.tocarPara.getPosition()));
+							}else if(selfPerc.getPosition().distanceTo(this.tocarPara.getPosition())<30){
+								kickToPoint(this.tocarPara.getPosition(), 4*selfPerc.getPosition().distanceTo(this.tocarPara.getPosition()));
+							}/*else if(selfPerc.getPosition().distanceTo(this.tocarPara.getPosition())<30){
+								kickToPoint(this.tocarPara.getPosition(),7*selfPerc.getPosition().distanceTo(this.tocarPara.getPosition()));
+							}*/else {
+
+								kickToPoint(this.tocarPara.getPosition(),3*selfPerc.getPosition().distanceTo(this.tocarPara.getPosition()));
+							}
+						//Conduz
+						}else {
+							if(ballPos.distanceTo(new Vector2D(0,0))<2) {
+								kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(),3*selfPerc.getPosition().distanceTo(fieldPerc.getTeamPlayer(side, 7).getPosition()));
+							}
+							ballPos.setX(ballPos.getX()+4*side.value());
+							kickToPoint(ballPos,10);
+						}
+						
 					}else {
 						//Marca a bola
 						if(areaDef.contains(ballPos.getX(), ballPos.getY())) {
@@ -199,6 +216,7 @@ public class DefensiveMidFielder extends Thread {
 
 	private void turnToPoint(Vector2D point){
 		Vector2D newDirection = point.sub(selfPerc.getPosition());
+		//System.out.println("Alinhou "+selfPerc.getTeam());
 		commander.doTurnToDirectionBlocking(newDirection);
 	}
 
@@ -313,11 +331,27 @@ public class DefensiveMidFielder extends Thread {
 	}
 	
 	private PlayerPerception getBestPlayerToWork() {
-		if(selfPerc.getPosition().distanceTo(fieldPerc.getTeamPlayer(side, 5).getPosition()) < selfPerc.getPosition().distanceTo(fieldPerc.getTeamPlayer(side, 6).getPosition())){
+		double marcadores5=0;
+		double marcadores6=0;
+		for (PlayerPerception p : fieldPerc.getTeamPlayers(EFieldSide.invert(side))) {
+			if(fieldPerc.getTeamPlayer(side, 5).getPosition().distanceTo(p.getPosition())<3) {
+				marcadores5 = 10;
+			}else if(fieldPerc.getTeamPlayer(side, 5).getPosition().distanceTo(p.getPosition())<8){
+				marcadores5++;
+			}
+			if(fieldPerc.getTeamPlayer(side, 6).getPosition().distanceTo(p.getPosition())<3) {
+				marcadores6 = 10;
+			}else if(fieldPerc.getTeamPlayer(side, 6).getPosition().distanceTo(p.getPosition())<8){
+				marcadores6++;
+			}
+				
+		}
+		if(selfPerc.getPosition().distanceTo(fieldPerc.getTeamPlayer(side, 5).getPosition()) < selfPerc.getPosition().distanceTo(fieldPerc.getTeamPlayer(side, 6).getPosition()) && marcadores5 <1){
 			return fieldPerc.getTeamPlayer(side, 5);
-		}else {
+		}else if(marcadores6<1) {
 			return fieldPerc.getTeamPlayer(side, 6);
 		}
+		return null;
 		
 	}
 
