@@ -6,7 +6,7 @@ import java.net.InetAddress;
 public class MainKrislet {
 
 	public static void main(String[] args) {
-		int numPlayers = 2; 
+		int numPlayers = 7; 
 		
 		try {			
 			launchServer();
@@ -19,6 +19,7 @@ public class MainKrislet {
 			
 			for (int i = 0; i < numPlayers; i++) {
 				Krislet player = new Krislet(InetAddress.getByName("localhost"), 6000, "Krislet");
+				
 				player.run();
 			}
 		} catch (IOException e) {

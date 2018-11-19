@@ -102,6 +102,7 @@ public class Back extends Thread {
 					//Chuta para longe do gol
 					if(ballPos.distanceTo(selfPerc.getPosition())<=1 && (((ballPos.getX()<-32)&&(selfPerc.getSide().value() == 1)) || ((ballPos.getX()>32)&&(selfPerc.getSide().value() == -1)))) {
 						//System.out.println("Chuta para longe "+selfPerc.getUniformNumber());
+						this.turnToPoint(goalPos);
 						kickToPoint(goalPos,150);
 					}else if(ballPos.distanceTo(selfPerc.getPosition())<=1){
 						if(pos != -1) {

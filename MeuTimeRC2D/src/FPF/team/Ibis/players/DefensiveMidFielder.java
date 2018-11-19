@@ -58,8 +58,8 @@ public class DefensiveMidFielder extends Thread {
 		this.escanPos = new Vector2D(this.xEscan*this.side.value(), this.yEscan*this.side.value());
 		this.goalPos = new Vector2D(50*side.value(), 0);		
 		this.areaDef = this.side == EFieldSide.LEFT ?
-				new Rectangle(-35, -18, 35, 36):
-					new Rectangle(0, -18, 35, 36);
+				new Rectangle(-35, -17, 30, 34):
+					new Rectangle(0, -17, 30, 34);
 		this.areaCobCima = this.side == EFieldSide.LEFT ?
 				new Rectangle(-53, -25, 21, 25):
 					new Rectangle(32, -25, 21, 25);					
@@ -108,8 +108,8 @@ public class DefensiveMidFielder extends Thread {
 							}
 						//Conduz
 						}else {
-							if(ballPos.distanceTo(new Vector2D(0,0))<2) {
-								kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(),3*selfPerc.getPosition().distanceTo(fieldPerc.getTeamPlayer(side, 7).getPosition()));
+							if(ballPos.distanceTo(new Vector2D(0,0))<=8) {
+								kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(),10*selfPerc.getPosition().distanceTo(fieldPerc.getTeamPlayer(side, 7).getPosition()));
 							}
 							ballPos.setX(ballPos.getX()+4*side.value());
 							kickToPoint(ballPos,10);

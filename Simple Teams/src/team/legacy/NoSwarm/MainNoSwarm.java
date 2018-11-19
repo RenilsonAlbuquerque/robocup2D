@@ -6,7 +6,7 @@ import java.net.InetAddress;
 public class MainNoSwarm {
 
 	public static void main(String[] args) {
-		int numPlayers = 2; 
+		int numPlayers = 7; 
 		
 		try {			
 			launchServer();

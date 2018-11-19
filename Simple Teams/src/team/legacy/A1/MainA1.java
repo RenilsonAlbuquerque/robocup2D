@@ -6,7 +6,7 @@ import java.net.InetAddress;
 public class MainA1 {
 
 	public static void main(String[] args) {
-		int numPlayers = 2; 
+		int numPlayers = 7; 
 		
 		try {			
 			launchServer();
