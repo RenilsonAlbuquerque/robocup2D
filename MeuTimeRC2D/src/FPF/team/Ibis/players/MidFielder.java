@@ -150,7 +150,7 @@ public class MidFielder extends Thread {
 					}
 				}
 				else if(atackArea.contains(ballPos.getX(), ballPos.getY())) {
-						if(this.selfPerc.getPosition().getX() <= (36 * this.side.value()) && ballPos.getX() <= (36 * this.side.value())) {
+						if(this.selfPerc.getPosition().getX() <= (20 * this.side.value()) && ballPos.getX() <= (20 * this.side.value())) {
 							this.dash(ballPos);
 						}
 						else if(this.selfPerc.getPosition().distanceTo(ballPos) <= 12)  {

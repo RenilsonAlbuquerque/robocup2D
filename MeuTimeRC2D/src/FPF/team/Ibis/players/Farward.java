@@ -35,7 +35,11 @@ public class Farward extends Thread {
 		this.side = selfPerc.getSide();
 		this.initPos = new Vector2D(xInit*side.value(), yInit);
 		this.goalPos = new Vector2D(50*side.value(), 0);
-		this.areaDef = new Rectangle(0, -16, 30, 40);
+		//this.areaDef = new Rectangle(0, -16, 16, 32);
+		this.areaDef = this.side == EFieldSide.LEFT ?
+				new Rectangle(-5, -16, 21, 32):
+					new Rectangle(-16, -16, 21, 32);
+				
 		this.areaAtack = this.side == EFieldSide.LEFT ?
 				new Rectangle(0, -16, 53, 16):
 					new Rectangle(-53, -16, 53, 16);
@@ -49,7 +53,7 @@ public class Farward extends Thread {
 			ballPos = fieldPerc.getBall().getPosition();
 			switch (matchPerc.getState()) {
 			case PLAY_ON :
-				if(this.selfPerc.getPosition().distanceTo(ballPos) <=1) {
+				if(this.selfPerc.getPosition().distanceTo(ballPos) <=3) {
 					this.atack(initPos);
 				}
 				else if(areaAtack.contains(ballPos.getX(), ballPos.getY())) {
@@ -64,7 +68,7 @@ public class Farward extends Thread {
 					}
 				}
 				else if(this.areaDef.contains(ballPos.getX(), ballPos.getY())) {
-					if(!this.teamHasBall() || this.selfPerc.getPosition().distanceTo(ballPos) <=6) {
+					if(!this.teamHasBall() || this.selfPerc.getPosition().distanceTo(ballPos) <=9) {
 						this.dash(ballPos);
 					}
 				}

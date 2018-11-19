@@ -109,11 +109,13 @@ public class Goolkeeper {
 						
 						if(this.selfPerc.getPosition().distanceTo(this.fieldPerc.getBall().getPosition()) <= 28) {
 							if(this.selfPerc.getPosition().distanceTo(this.fieldPerc.getBall().getPosition()) <= 1) {
+								this.turnToPoint(this.fieldPerc.getBall().getPosition());
+								this.commander.doCatch(0);
 								this.kickToPoint(new Vector2D(0,0), 500);
 							}else if(currentBallPos.distanceTo(previousBallPos) >= 2.5) {
 								previousUnchangedPosition = new Vector2D(currentBallPos.getX(),currentBallPos.getY());
-								currentBallPos.setX((52 - Math.abs(currentBallPos.getX()))  * this.selfPerc.getSide().value() * (-1) );
-								previousBallPos.setX((52 - Math.abs(previousBallPos.getX()))  * this.selfPerc.getSide().value() * (-1));
+								currentBallPos.setX((51 - Math.abs(currentBallPos.getX()))  * this.selfPerc.getSide().value() * (-1) );
+								previousBallPos.setX((51 - Math.abs(previousBallPos.getX()))  * this.selfPerc.getSide().value() * (-1));
 								
 								//System.out.println(" new Previous: (" +  previousBallPos.getX() + ","+ previousBallPos.getY() + ") "+
 									//	" Current: (" +  currentBallPos.getX() + ","+ currentBallPos.getY() + ")");
