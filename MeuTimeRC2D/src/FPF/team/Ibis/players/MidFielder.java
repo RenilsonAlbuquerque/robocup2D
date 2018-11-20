@@ -382,7 +382,11 @@ public class MidFielder extends Thread {
 	}
 	
 	private boolean souOMaisPerto() {
-		return selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 5).getPosition().distanceTo(ballPos) && selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 6).getPosition().distanceTo(ballPos);
+		if(selfPerc.getUniformNumber() == 5)
+			return selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 7).getPosition().distanceTo(ballPos) && selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 6).getPosition().distanceTo(ballPos);
+		else
+			return selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 7).getPosition().distanceTo(ballPos) && selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 5).getPosition().distanceTo(ballPos);
+
 	}
 
 }

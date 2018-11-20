@@ -107,7 +107,7 @@ public class DefensiveMidFielder extends Thread {
 							}
 						//Conduz
 						}else {
-							if(ballPos.distanceTo(new Vector2D(0,0))<=8) {
+							if(ballPos.distanceTo(new Vector2D(0,0))<=10) {
 								kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(),10*selfPerc.getPosition().distanceTo(fieldPerc.getTeamPlayer(side, 7).getPosition()));
 							}
 							ballPos.setX(ballPos.getX()+4*side.value());

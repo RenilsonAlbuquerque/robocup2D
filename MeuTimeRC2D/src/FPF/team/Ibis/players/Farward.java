@@ -55,7 +55,7 @@ public class Farward extends Thread {
 			ballPos = fieldPerc.getBall().getPosition();
 			switch (matchPerc.getState()) {
 			case PLAY_ON :
-				if(this.selfPerc.getPosition().distanceTo(ballPos) <=3) {
+				if(this.selfPerc.getPosition().distanceTo(ballPos) <=6) {
 					this.atack(initPos);
 				}
 				else if(areaAtack.contains(ballPos.getX(), ballPos.getY())) {
@@ -87,7 +87,7 @@ public class Farward extends Thread {
 						if (!(this.isAlignToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition(), 1))) {
 							this.turnToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition());
 						}else {
-							kickToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition() ,10);
+							kickToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition() ,75);
 						}
 					}
 					dash(this.ballPos);
@@ -100,7 +100,7 @@ public class Farward extends Thread {
 						if (!(this.isAlignToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition(), 1))) {
 							this.turnToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition());
 						}else {
-							kickToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition() ,10);
+							kickToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition() ,75);
 						}
 					}
 					dash(this.ballPos);

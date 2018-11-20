@@ -110,8 +110,8 @@ public class Goolkeeper {
 						
 						if(this.selfPerc.getPosition().distanceTo(this.fieldPerc.getBall().getPosition()) <= 28) {
 							if(this.selfPerc.getPosition().distanceTo(this.fieldPerc.getBall().getPosition()) <= 1.1) {
-								this.turnToPoint(this.fieldPerc.getBall().getPosition());
-								this.commander.doCatchBlocking(0);
+								//this.turnToPoint(this.fieldPerc.getBall().getPosition());
+								//this.commander.doCatchBlocking(0);
 								//this.turnToPoint(this.centro);
 								//commander.doKickBlocking(500, 0);
 								//System.out.println("goleiro olha"+selfPerc.getDirection());

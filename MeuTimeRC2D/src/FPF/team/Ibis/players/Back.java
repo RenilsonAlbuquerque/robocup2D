@@ -57,15 +57,15 @@ public class Back extends Thread {
 		this.goalPos = new Vector2D(50*side.value(), 0);  
 		if(pos != -1) {
 			this.areaDef = this.side == EFieldSide.LEFT ?
-					new Rectangle(-53, 0, 36, 34):
-						new Rectangle(17, -34, 36, 34);
+					new Rectangle(-53, 0, 32, 35):
+						new Rectangle(21, -34, 32, 35);
 			this.areaCob = this.side == EFieldSide.LEFT ?
 					new Rectangle(-53, -25, 21, 25):
 						new Rectangle(32, 0, 21, 25);
 		}else {
 			this.areaDef = this.side == EFieldSide.LEFT ?
-					new Rectangle(-53, -34, 36, 34):
-						new Rectangle(17, 0, 36, 34);
+					new Rectangle(-53, -34, 32, 35):
+						new Rectangle(21, 0, 32, 35);
 			this.areaCob = this.side == EFieldSide.LEFT ?
 					new Rectangle(-53, 0, 21, 25):
 						new Rectangle(32, -25, 21, 25);
@@ -129,8 +129,8 @@ public class Back extends Thread {
 						//Marca a bola
 						if(areaDef.contains(ballPos.getX(), ballPos.getY())) {
 							//System.out.println("Marca bola"+selfPerc.getUniformNumber());
-							if(selfPerc.getPosition().distanceTo(ballPos) > 5)
-								ballPos.setX(ballPos.getX()+(-3*side.value()));
+							if(selfPerc.getPosition().distanceTo(ballPos) > 6)
+								ballPos.setX(ballPos.getX()+(-5*side.value()));
 							this.dash(fieldPerc.getBall().getPosition());
 						}else {
 							//Cobertura
