@@ -3,7 +3,6 @@ package FPF.team.Ibis.players;
 
 import java.awt.Rectangle;
 //import java.util.ArrayList;
-import java.util.ArrayList;
 
 import simple_soccer_lib.PlayerCommander;
 import simple_soccer_lib.perception.FieldPerception;

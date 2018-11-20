@@ -96,15 +96,16 @@ public class Back extends Thread {
 				break ;
 			case PLAY_ON :
 				if(selfPerc.getPosition().distanceTo(ballPos)<5) {
-					this.dash(ballPos);
+					this.dash(fieldPerc.getBall().getPosition());
 				}
 				if(!(this.teamIsAtc())){ // meu time não tem a bola?
 					//Chuta para longe do gol
-					if(ballPos.distanceTo(selfPerc.getPosition())<=1 && (((ballPos.getX()<-32)&&(selfPerc.getSide().value() == 1)) || ((ballPos.getX()>32)&&(selfPerc.getSide().value() == -1)))) {
+					if(ballPos.distanceTo(selfPerc.getPosition())<=1.3 && (((ballPos.getX()<-32)&&(selfPerc.getSide().value() == 1)) || ((ballPos.getX()>32)&&(selfPerc.getSide().value() == -1)))) {
 						//System.out.println("Chuta para longe "+selfPerc.getUniformNumber());
-						this.turnToPoint(goalPos);
+						//this.turnToPoint(goalPos);
+						//kickToPoint(new Vector2D(-53*side.value(),18*pos),150);
 						kickToPoint(goalPos,150);
-					}else if(ballPos.distanceTo(selfPerc.getPosition())<=1){
+					}else if(fieldPerc.getBall().getPosition().distanceTo(selfPerc.getPosition())<=1){
 						if(pos != -1) {
 							this.tocarPara = fieldPerc.getTeamPlayer(side, 5);
 						}else {
@@ -130,7 +131,7 @@ public class Back extends Thread {
 							//System.out.println("Marca bola"+selfPerc.getUniformNumber());
 							if(selfPerc.getPosition().distanceTo(ballPos) > 5)
 								ballPos.setX(ballPos.getX()+(-3*side.value()));
-							this.dash(ballPos);
+							this.dash(fieldPerc.getBall().getPosition());
 						}else {
 							//Cobertura
 							if(areaCob.contains(ballPos.getX(), ballPos.getY())) {
@@ -265,9 +266,9 @@ public class Back extends Thread {
 		if (selfPerc.getPosition().distanceTo(point) <= 1) return ;
 		if (!isAlignToPoint(point, 10)) turnToPoint(point);
 		if(selfPerc.getPosition().distanceTo(point) <= 1.5) {
-			commander.doDashBlocking(55);
+			commander.doDashBlocking(40);
 		}else if(selfPerc.getPosition().distanceTo(point) < 2) {
-			commander.doDashBlocking(65);			
+			commander.doDashBlocking(50);			
 		}else if(selfPerc.getPosition().distanceTo(point) < 3) {
 			commander.doDashBlocking(75);			
 		}else if(selfPerc.getPosition().distanceTo(point) < 4){

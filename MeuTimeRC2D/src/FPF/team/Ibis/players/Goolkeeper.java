@@ -6,7 +6,6 @@ import simple_soccer_lib.perception.FieldPerception;
 import simple_soccer_lib.perception.MatchPerception;
 import simple_soccer_lib.perception.PlayerPerception;
 import simple_soccer_lib.utils.EFieldSide;
-import simple_soccer_lib.utils.EPlayerState;
 import simple_soccer_lib.utils.Vector2D;
 import utils.PlayerUtils;
 
@@ -20,6 +19,7 @@ public class Goolkeeper {
 	private Vector2D initPos;
 	private EFieldSide side;
 	private double xInit,yInit;
+	private Vector2D centro;
 	
 	public Goolkeeper(PlayerCommander player,long nextIteration) {
 		commander = player;
@@ -28,6 +28,7 @@ public class Goolkeeper {
 		yInit=0;
 		side = selfPerc.getSide();
 		initPos = new Vector2D(xInit*side.value(), yInit*side.value());
+		this.centro = new Vector2D(0,0);
 		this.action(nextIteration);
 	}
 
@@ -52,13 +53,13 @@ public class Goolkeeper {
 		if (selfPerc.getPosition().distanceTo(point) <= 1) return ;
 		if (!isAlignToPoint(point, 10)) turnToPoint(point);
 		if(selfPerc.getPosition().distanceTo(point) <= 1.5) {
-			commander.doDashBlocking(60);
+			commander.doDashBlocking(75);
 		}else if(selfPerc.getPosition().distanceTo(point) < 2) {
-			commander.doDashBlocking(70);			
+			commander.doDashBlocking(80);			
 		}else if(selfPerc.getPosition().distanceTo(point) < 3) {
-			commander.doDashBlocking(75);			
+			commander.doDashBlocking(85);			
 		}else if(selfPerc.getPosition().distanceTo(point) < 4){
-			commander.doDashBlocking(85);					
+			commander.doDashBlocking(90);					
 		}else if(selfPerc.getPosition().distanceTo(point) < 5){
 			commander.doDashBlocking(95);					
 		}else{
@@ -108,10 +109,13 @@ public class Goolkeeper {
 						
 						
 						if(this.selfPerc.getPosition().distanceTo(this.fieldPerc.getBall().getPosition()) <= 28) {
-							if(this.selfPerc.getPosition().distanceTo(this.fieldPerc.getBall().getPosition()) <= 1) {
+							if(this.selfPerc.getPosition().distanceTo(this.fieldPerc.getBall().getPosition()) <= 1.1) {
 								this.turnToPoint(this.fieldPerc.getBall().getPosition());
-								this.commander.doCatch(0);
-								this.kickToPoint(new Vector2D(0,0), 500);
+								this.commander.doCatchBlocking(0);
+								//this.turnToPoint(this.centro);
+								//commander.doKickBlocking(500, 0);
+								//System.out.println("goleiro olha"+selfPerc.getDirection());
+								this.kickToPoint(this.centro, 500);
 							}else if(currentBallPos.distanceTo(previousBallPos) >= 2.5) {
 								previousUnchangedPosition = new Vector2D(currentBallPos.getX(),currentBallPos.getY());
 								currentBallPos.setX((51 - Math.abs(currentBallPos.getX()))  * this.selfPerc.getSide().value() * (-1) );
@@ -129,7 +133,8 @@ public class Goolkeeper {
 								
 								double y = ((x2 * y1) - (y2 * x1))/ (x2 - x1);
 							
-								this.dash(new Vector2D(initPos.getX(),y));
+								if(y>-7 && y<7)
+									this.dash(new Vector2D(initPos.getX(),y));
 								
 												
 							}
@@ -175,7 +180,7 @@ public class Goolkeeper {
 				}
 	}
 
-	private boolean haveITheBall() {
+	/*private boolean haveITheBall() {
 		double distanceToBall = this.selfPerc.getPosition().distanceTo(fieldPerc.getBall().getPosition());
 		for(PlayerPerception p : this.fieldPerc.getAllPlayers()) {
 			if(p.getPosition().distanceTo(fieldPerc.getBall().getPosition()) < distanceToBall) {
@@ -184,7 +189,7 @@ public class Goolkeeper {
 		}
 		this.selfPerc.setState(EPlayerState.HAS_BALL);
 		return true;
-	}
+	}*/
 
 	 
 }

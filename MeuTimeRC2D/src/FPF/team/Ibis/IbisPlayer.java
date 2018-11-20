@@ -46,6 +46,15 @@ public class IbisPlayer extends Thread {
 		case 7:
 			new Farward(commander,nextIteration);
 			break ;
+		/*case 2:
+			new Farward(commander,nextIteration);
+			break ;
+		case 3:
+			new MidFielder(commander,nextIteration,1); // cima
+			break ;
+		case 4:
+			new MidFielder(commander,nextIteration,-1); // baixo
+			break ;*/
 		default : break ;
 		}
 

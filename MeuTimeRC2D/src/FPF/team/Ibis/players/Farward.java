@@ -26,6 +26,7 @@ public class Farward extends Thread {
 	private Vector2D ballPos;
 	private Rectangle areaDef;
 	private Rectangle areaAtack;
+	private Vector2D escanPos;
 
 	public Farward(PlayerCommander player,long nextIteration) {
 		commander = player;
@@ -43,6 +44,7 @@ public class Farward extends Thread {
 		this.areaAtack = this.side == EFieldSide.LEFT ?
 				new Rectangle(0, -16, 53, 16):
 					new Rectangle(-53, -16, 53, 16);
+		this.escanPos = new Vector2D(35*this.side.value(), 0*this.side.value());
 		this.action(nextIteration);
 		
 	}
@@ -85,7 +87,7 @@ public class Farward extends Thread {
 						if (!(this.isAlignToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition(), 1))) {
 							this.turnToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition());
 						}else {
-							kickToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition() ,80);
+							kickToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition() ,10);
 						}
 					}
 					dash(this.ballPos);
@@ -98,7 +100,7 @@ public class Farward extends Thread {
 						if (!(this.isAlignToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition(), 1))) {
 							this.turnToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition());
 						}else {
-							kickToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition() ,80);
+							kickToPoint(fieldPerc.getTeamPlayer(side, 6).getPosition() ,10);
 						}
 					}
 					dash(this.ballPos);
@@ -139,7 +141,40 @@ public class Farward extends Thread {
 				}else
 					this.dash(initPos);
 			
-				break;	
+				break;
+			case CORNER_KICK_LEFT :
+				if(selfPerc.getSide().equals(EFieldSide.LEFT))
+					dash(escanPos);
+				break ;
+			case CORNER_KICK_RIGHT :
+				if(selfPerc.getSide().equals(EFieldSide.RIGHT))
+					dash(escanPos);
+				break ;
+			case FREE_KICK_LEFT :
+				if(selfPerc.getSide().equals(EFieldSide.LEFT)) {
+					if(this.souOMaisPerto()) {
+						if(selfPerc.getPosition().distanceTo(ballPos)<=1) {
+							this.kickToPoint(goalPos, 500);
+						}else {
+							dash(ballPos);
+						}
+						
+					}
+				}
+					
+				break ;
+			case FREE_KICK_RIGHT :
+				if(selfPerc.getSide().equals(EFieldSide.RIGHT)) {
+					if(this.souOMaisPerto()) {
+						if(selfPerc.getPosition().distanceTo(ballPos)<=1) {
+							this.kickToPoint(goalPos, 500);
+						}else {
+							dash(ballPos);
+						}
+						
+					}
+				}
+				break ;
 			default :
 				break ;
 			}
@@ -195,7 +230,7 @@ public class Farward extends Thread {
 	private void atack(Vector2D originalPosition) {
 		if (PlayerUtils.isPointsAreClose(selfPerc.getPosition(),
 				this.fieldPerc.getBall().getPosition(), 1)){
-			if (PlayerUtils.isPointsAreClose(this.fieldPerc.getBall().getPosition(), goalPos, 30)){
+			if (PlayerUtils.isPointsAreClose(this.fieldPerc.getBall().getPosition(), goalPos, 28)){
 				// chuta para o gol
 				kickToPoint(goalPos, 100);
 			} else {
@@ -247,12 +282,12 @@ public class Farward extends Thread {
 		return angle < margin && angle > margin*(-1);
 	}
 
-	private boolean isPointsAreClose(Vector2D reference,
+	/*private boolean isPointsAreClose(Vector2D reference,
 			Vector2D point, double margin){
 		return reference.distanceTo(point) <= margin;
-	}
+	}*/
 
-	private PlayerPerception getClosestPlayerPoint(Vector2D point, EFieldSide side, double margin){
+	/*private PlayerPerception getClosestPlayerPoint(Vector2D point, EFieldSide side, double margin){
 		ArrayList<PlayerPerception> lp = fieldPerc.getTeamPlayers(side);
 		PlayerPerception np = null ;
 		if (lp != null && !lp.isEmpty()){
@@ -274,7 +309,7 @@ public class Farward extends Thread {
 			}
 		}
 		return np;
-	}
+	}*/
 
 
 	
@@ -303,6 +338,10 @@ public class Farward extends Thread {
 				//System.out.println(smallerDistanceOutherTeam-smallerDistanceMyTeam);
 			}return smallerDistanceMyTeam <= smallerDistanceOutherTeam || smallerDistanceOutherTeam-smallerDistanceMyTeam >= 10;
 		}
+	}
+	
+	private boolean souOMaisPerto() {
+		return selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 5).getPosition().distanceTo(ballPos) && selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 6).getPosition().distanceTo(ballPos);
 	}
 
 
