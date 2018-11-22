@@ -342,13 +342,16 @@ public class MidFielder extends Thread {
 				// chuta para o gol
 				kickToPoint(goalPos, 100);
 			} else {
+				//this.keepOrKick();
+				
 				if(this.amImarked()){
 					//toca pra o melhor jogador desmarcado
 					kickToPoint(this.getBestPlayerToWork().getPosition(), 40);
 				}else{
 					// conduz para o gol
-					kickToPoint(goalPos, 20);
+					this.kickToPoint(new Vector2D( goalPos.getX(),(side.value() == 1)? (17 * pos): -17* pos), 20);
 				}
+				
 				
 			}
 		}else  {
@@ -492,5 +495,68 @@ public class MidFielder extends Thread {
 			}
 		}
 	}
+	private void keepOrKick() {
+		double marcadoresMid=0;
+		double marcadoresCenter=0;
+		double marcadoresFar =0;
+		double marcadoresMyself = 0;
+		PlayerPerception mid = (selfPerc.getUniformNumber() == 5)? fieldPerc.getTeamPlayer(side,6): fieldPerc.getTeamPlayer(side,5);
+		PlayerPerception far = fieldPerc.getTeamPlayer(side,7);
+		PlayerPerception center = fieldPerc.getTeamPlayer(side,4);
+		
+		
+		for (PlayerPerception p : fieldPerc.getTeamPlayers(EFieldSide.invert(side))) {
+			if(selfPerc.getPosition().distanceTo(p.getPosition()) <2  ) {
+				marcadoresMyself+=2;
+			}else if(selfPerc.getPosition().distanceTo(p.getPosition())<5){
+				marcadoresMyself++;
+			}
+			if(mid.getPosition().distanceTo(p.getPosition())<4) {
+				marcadoresMid +=2;
+			}else if(mid.getPosition().distanceTo(p.getPosition())<8){
+				marcadoresMid ++;
+			}
+			if(far.getPosition().distanceTo(p.getPosition())<4) {
+				marcadoresFar +=2;
+			}else if(far.getPosition().distanceTo(p.getPosition())<8){
+				marcadoresFar++;
+			}
+			if(center.getPosition().distanceTo(p.getPosition())<4) {
+				marcadoresCenter +=2;
+			}else if(center.getPosition().distanceTo(p.getPosition())<8){
+				marcadoresCenter++;
+			}
+				
+		}
+		if(marcadoresMyself <= 1){
+			//if(marcadoresMyself)
+			if(marcadoresFar  < 1 && far.getPosition().distanceTo(goalPos) < mid.getPosition().distanceTo(goalPos))
+				this.kickToPoint(far.getPosition(), 40);
+			else if(marcadoresMid < 1 && mid.getPosition().distanceTo(goalPos) < far.getPosition().distanceTo(goalPos) )
+				this.kickToPoint(mid.getPosition(), 60);
+			else {
+				this.kickToPoint(new Vector2D( goalPos.getX(),(side.value() == 1)? (17 * pos): -17* pos), 20);
+			}
+				
+		}
+		else if(marcadoresMyself >= 2) {
+			if(marcadoresFar < marcadoresMid && far.getPosition().distanceTo(goalPos) < mid.getPosition().distanceTo(goalPos) )
+				this.kickToPoint(far.getPosition(), 40);
+			else if(marcadoresMid < marcadoresFar && mid.getPosition().distanceTo(goalPos) < far.getPosition().distanceTo(goalPos)  )
+				this.kickToPoint(mid.getPosition(), 60);
+			else
+				this.kickToPoint(center.getPosition(), 60);
+		}
+		else {
+			this.kickToPoint(new Vector2D( goalPos.getX(),(side.value() == 1)? (17 * pos): -17* pos), 20);
+			//this.kickToPoint(goalPos, 20);
+		}
+			
+	}
+	/*
+	private boolean playerInMyFront(PlayerPerception target) {
+		if(target.getDirection().distanceTo(other))
+	}
+	*/
 
 }
