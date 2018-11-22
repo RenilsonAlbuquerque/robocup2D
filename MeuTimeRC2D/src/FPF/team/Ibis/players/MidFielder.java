@@ -161,7 +161,9 @@ public class MidFielder extends Thread {
 						}
 				}else {
 					if(teamHasBall()) {
-						this.dash(new Vector2D(-2*side.value(),initPos.getY()));
+						
+						positAtack();
+						//this.dash(new Vector2D(-2*side.value(),initPos.getY()));
 					}else
 						this.walk(initPos);
 					
@@ -187,7 +189,6 @@ public class MidFielder extends Thread {
 						if(ballPos.distanceTo(selfPerc.getPosition())<=1) {
 							kickToPoint(fieldPerc.getTeamPlayer(side, 4).getPosition() ,250);
 						}else{
-							//System.out.println("Aqui");
 							//commander.doMoveBlocking(fieldPerc.getBall().getPosition().getX(),fieldPerc.getBall().getPosition().getY());
 							this.dash(fieldPerc.getBall().getPosition());
 						}			
@@ -196,16 +197,15 @@ public class MidFielder extends Thread {
 						if(ballPos.distanceTo(selfPerc.getPosition())<=1) {
 							kickToPoint(fieldPerc.getTeamPlayer(side, 4).getPosition() ,250);
 						}else {
-							//System.out.println("Aqui");
 							//commander.doMoveBlocking(fieldPerc.getBall().getPosition().getX(),fieldPerc.getBall().getPosition().getY());
 							this.dash(fieldPerc.getBall().getPosition());
 						}
 						
 					}else {
-						this.dash(this.initPos);
+						this.walk(this.initPos);
 					}
 				}else {
-					this.dash(this.initPos);
+					this.walk(this.initPos);
 				}
 				break ;
 			case KICK_IN_RIGHT :
@@ -226,10 +226,10 @@ public class MidFielder extends Thread {
 							dash(fieldPerc.getBall().getPosition());
 						}						
 					}else {
-						this.dash(this.initPos);
+						this.walk(this.initPos);
 					}
 				}else {
-					this.dash(initPos);
+					this.walk(initPos);
 				}
 			case CORNER_KICK_LEFT :
 				if(selfPerc.getSide().equals(EFieldSide.LEFT)) {
@@ -396,18 +396,7 @@ public class MidFielder extends Thread {
 			return selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 7).getPosition().distanceTo(ballPos) && selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 5).getPosition().distanceTo(ballPos);
 
 	}
-<<<<<<< HEAD
-	/*
-	private PlayerPerception thereIsSomeoneFree() {
-		for(PlayerPerception teammate: this.fieldPerc.getTeamPlayers(side)) {
-			
-		}
-		
-	}
-	*/
-	
-	
-=======
+
 	private void walk(Vector2D point){
 		if (selfPerc.getPosition().distanceTo(point) <= 1) return ;
 		if (!isAlignToPoint(point, 10)) turnToPoint(point);
@@ -466,6 +455,43 @@ public class MidFielder extends Thread {
 		return false;
 		
 	}
->>>>>>> b8001acc3c5eb3d81b84c91f36b08870f3f87f5d
+	private void positAtack() {
+		if(this.side.value() == 1) {
+			if(pos ==1) {
+				if(ballPos.getY() > 0 && ballPos.getX() > 0 ) {
+					this.dash(new Vector2D(ballPos.getX() - 2,17));
+				}
+				else {
+					this.walk(new Vector2D(0,initPos.getY()));
+				}
+			}else {
+				if(ballPos.getY() < 0 && ballPos.getX() > 0 ) {
+					this.dash(new Vector2D(ballPos.getX() - 2,-17));
+				}
+				else {
+					this.walk(new Vector2D(0,initPos.getY()));
+				}
+			}
+			
+		}
+		else {
+			if(pos ==1) {
+				if(ballPos.getY() < 0 && ballPos.getX() < 0 ) {
+					this.dash(new Vector2D(ballPos.getX() + 2,-17));
+				}
+				else {
+					this.walk(new Vector2D(0,initPos.getY()));
+				}
+			}else {
+				if(ballPos.getY() > 0 && ballPos.getX() < 0) {
+					this.dash(new Vector2D(ballPos.getX() + 2,17 ));
+				}
+				else {
+					this.walk(new Vector2D(0,initPos.getY()));
+				}
+			}
+		}
+	}
+
 
 }
