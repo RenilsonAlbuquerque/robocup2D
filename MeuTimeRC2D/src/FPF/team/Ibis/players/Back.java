@@ -97,7 +97,7 @@ public class Back extends Thread {
 			case PLAY_ON :
 				if(!(this.teamIsAtc())){ // meu time não tem a bola?
 					//Chuta para longe do gol
-					if(ballPos.distanceTo(selfPerc.getPosition())<=1.3 && (((ballPos.getX()<-32)&&(selfPerc.getSide().value() == 1)) || ((ballPos.getX()>32)&&(selfPerc.getSide().value() == -1)))) {
+					if(ballPos.distanceTo(selfPerc.getPosition())<=1.3 && ballPos.getY() < 17 && ballPos.getY() > -17 && (((ballPos.getX()<-32)&&(selfPerc.getSide().value() == 1)) || ((ballPos.getX()>32)&&(selfPerc.getSide().value() == -1)))) {
 						//System.out.println("Chuta para longe "+selfPerc.getUniformNumber());
 						//this.turnToPoint(goalPos);
 						//kickToPoint(new Vector2D(-53*side.value(),18*pos),150);
@@ -266,9 +266,9 @@ public class Back extends Thread {
 		if (selfPerc.getPosition().distanceTo(point) <= 1) return ;
 		if (!isAlignToPoint(point, 10)) turnToPoint(point);
 		if(selfPerc.getPosition().distanceTo(point) <= 1.5) {
-			commander.doDashBlocking(40);
+			commander.doDashBlocking(50);
 		}else if(selfPerc.getPosition().distanceTo(point) < 2) {
-			commander.doDashBlocking(50);			
+			commander.doDashBlocking(60);			
 		}else if(selfPerc.getPosition().distanceTo(point) < 3) {
 			commander.doDashBlocking(75);			
 		}else if(selfPerc.getPosition().distanceTo(point) < 4){
