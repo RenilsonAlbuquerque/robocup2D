@@ -82,7 +82,7 @@ public class DefensiveMidFielder extends Thread {
 				commander.doMoveBlocking(this.xDef, this.yDef);
 				break ;
 			case PLAY_ON :
-				if(!(this.teamIsAtc())){ // meu time não tem a bola?
+			if(!(this.teamIsAtc())){ // meu time não tem a bola?
 					//Chuta para longe do gol
 					if(ballPos.distanceTo(selfPerc.getPosition())<=1 && (((ballPos.getX()<-32)&&(selfPerc.getSide().value() == 1)) || ((ballPos.getX()>32)&&(selfPerc.getSide().value() == -1)))) {
 						System.out.println("Chuta para longe "+selfPerc.getUniformNumber());
@@ -107,11 +107,13 @@ public class DefensiveMidFielder extends Thread {
 							}
 						//Conduz
 						}else {
-							if(ballPos.distanceTo(new Vector2D(0,0))<=10) {
-								kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(),10*selfPerc.getPosition().distanceTo(fieldPerc.getTeamPlayer(side, 7).getPosition()));
+							if(ballPos.distanceTo(new Vector2D(0,0))<=15) {
+								kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(),6*selfPerc.getPosition().distanceTo(fieldPerc.getTeamPlayer(side, 7).getPosition()));
+							}else {
+								ballPos.setX(ballPos.getX()+4*side.value());
+								kickToPoint(ballPos,10);
 							}
-							ballPos.setX(ballPos.getX()+4*side.value());
-							kickToPoint(ballPos,10);
+							
 						}
 						
 					}else {
@@ -125,6 +127,9 @@ public class DefensiveMidFielder extends Thread {
 							//Cobertura
 							if(areaCobCima.contains(ballPos.getX(), ballPos.getY())) {
 								//System.out.println("Cobertura "+selfPerc.getUniformNumber());
+								if(selfPerc.getPosition().distanceTo(ballPos)<5) {
+									this.dash(fieldPerc.getBall().getPosition());
+								}else
 								cobPos.setY(yCob);
 								this.dash(cobPos);								
 							}else if(areaCobBaixo.contains(ballPos.getX(), ballPos.getY())){
@@ -132,7 +137,7 @@ public class DefensiveMidFielder extends Thread {
 								this.dash(cobPos);
 							}else {
 								//System.out.println("Posiciona defesa"+selfPerc.getUniformNumber()+" Time"+selfPerc.getTeam());
-								this.dash(defPos);
+								this.walk(defPos);
 							}							
 						}
 					}										
@@ -143,7 +148,7 @@ public class DefensiveMidFielder extends Thread {
 						//System.out.println("Toca "+selfPerc.getUniformNumber());
 						kickToPoint(PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 10).getPosition(), 50);
 					}else{
-						this.dash(atcPos);
+						this.walk(atcPos);
 					}
 				}
 				break ;
@@ -235,6 +240,13 @@ public class DefensiveMidFielder extends Thread {
 		}else{
 			commander.doDashBlocking(100);
 		}
+		
+	}
+	
+	private void walk(Vector2D point){
+		if (selfPerc.getPosition().distanceTo(point) <= 1) return ;
+		if (!isAlignToPoint(point, 10)) turnToPoint(point);
+			commander.doDashBlocking(50);
 		
 	}
 

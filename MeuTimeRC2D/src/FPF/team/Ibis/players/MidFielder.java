@@ -163,7 +163,7 @@ public class MidFielder extends Thread {
 					if(teamHasBall()) {
 						this.dash(new Vector2D(-2*side.value(),initPos.getY()));
 					}else
-						this.dash(initPos);
+						this.walk(initPos);
 					
 				}
 					
@@ -305,6 +305,7 @@ public class MidFielder extends Thread {
 			}
 		}
 	}
+	/*
 	private void defend(Vector2D originalPosition) {
 		if(this.defenseArea.contains(this.selfPerc.getPosition().getX(),this.selfPerc.getPosition().getY())) {
 			if(this.iAmTheLastPlayer()) {
@@ -322,6 +323,7 @@ public class MidFielder extends Thread {
 		}
 		
 	}
+	*/
 	private boolean iAmTheLastPlayer() {
 		double distance = this.selfPerc.getPosition().distanceTo(this.fieldPerc.getBall().getPosition());
 		for(PlayerPerception p: this.fieldPerc.getTeamPlayers(this.selfPerc.getSide())) {
@@ -340,8 +342,14 @@ public class MidFielder extends Thread {
 				// chuta para o gol
 				kickToPoint(goalPos, 100);
 			} else {
-				// conduz para o gol
-				kickToPoint(goalPos, 20);
+				if(this.amImarked()){
+					//toca pra o melhor jogador desmarcado
+					kickToPoint(this.getBestPlayerToWork().getPosition(), 40);
+				}else{
+					// conduz para o gol
+					kickToPoint(goalPos, 20);
+				}
+				
 			}
 		}else  {
 			if(this.atackArea.contains(this.selfPerc.getPosition().getX(),this.selfPerc.getPosition().getY())
@@ -388,6 +396,7 @@ public class MidFielder extends Thread {
 			return selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 7).getPosition().distanceTo(ballPos) && selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 5).getPosition().distanceTo(ballPos);
 
 	}
+<<<<<<< HEAD
 	/*
 	private PlayerPerception thereIsSomeoneFree() {
 		for(PlayerPerception teammate: this.fieldPerc.getTeamPlayers(side)) {
@@ -398,5 +407,65 @@ public class MidFielder extends Thread {
 	*/
 	
 	
+=======
+	private void walk(Vector2D point){
+		if (selfPerc.getPosition().distanceTo(point) <= 1) return ;
+		if (!isAlignToPoint(point, 10)) turnToPoint(point);
+			commander.doDashBlocking(50);
+		
+	}
+	private PlayerPerception getBestPlayerToWork() {
+		
+		double marcadoresMid=0;
+		double marcadoresCenter=0;
+		double marcadoresFar =0;
+		PlayerPerception mid = (selfPerc.getUniformNumber() == 5)? fieldPerc.getTeamPlayer(side,6): fieldPerc.getTeamPlayer(side,5);
+		PlayerPerception far = fieldPerc.getTeamPlayer(side,7);
+		PlayerPerception center = fieldPerc.getTeamPlayer(side,4);
+		
+		
+		if(this.selfPerc.getPosition().distanceTo(goalPos) < 10)
+			return far;
+		
+		for (PlayerPerception p : fieldPerc.getTeamPlayers(EFieldSide.invert(side))) {
+			if(mid.getPosition().distanceTo(p.getPosition())<3) {
+				marcadoresMid = 10;
+			}else if(mid.getPosition().distanceTo(p.getPosition())<8){
+				marcadoresMid++;
+			}
+			if(far.getPosition().distanceTo(p.getPosition())<3) {
+				marcadoresFar = 10;
+			}else if(far.getPosition().distanceTo(p.getPosition())<8){
+				marcadoresFar++;
+			}
+			if(center.getPosition().distanceTo(p.getPosition())<3) {
+				marcadoresCenter = 10;
+			}else if(center.getPosition().distanceTo(p.getPosition())<8){
+				marcadoresCenter++;
+			}
+				
+		}
+		if(marcadoresMid > marcadoresFar && marcadoresFar < 10){
+			return far;
+		}else if(marcadoresMid < marcadoresFar && marcadoresMid < 10) {
+			return mid;
+		}else
+			return center;
+		
+	}
+	private boolean amImarked() {
+		
+		double mark = 0;
+		for (PlayerPerception p : fieldPerc.getTeamPlayers(EFieldSide.invert(side))) {
+			if(selfPerc.getPosition().distanceTo(p.getPosition())<3 ) {
+				mark++;
+				if(mark >= 2)
+					return true;
+			}	
+		}
+		return false;
+		
+	}
+>>>>>>> b8001acc3c5eb3d81b84c91f36b08870f3f87f5d
 
 }

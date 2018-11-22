@@ -95,12 +95,9 @@ public class Back extends Thread {
 				commander.doMoveBlocking(this.xDef, this.yDef);
 				break ;
 			case PLAY_ON :
-				if(selfPerc.getPosition().distanceTo(ballPos)<5) {
-					this.dash(fieldPerc.getBall().getPosition());
-				}
 				if(!(this.teamIsAtc())){ // meu time não tem a bola?
 					//Chuta para longe do gol
-					if(ballPos.distanceTo(selfPerc.getPosition())<=1.3 && (((ballPos.getX()<-32)&&(selfPerc.getSide().value() == 1)) || ((ballPos.getX()>32)&&(selfPerc.getSide().value() == -1)))) {
+					if(ballPos.distanceTo(selfPerc.getPosition())<=1.3 && ballPos.getY() < 17 && ballPos.getY() > -17 && (((ballPos.getX()<-32)&&(selfPerc.getSide().value() == 1)) || ((ballPos.getX()>32)&&(selfPerc.getSide().value() == -1)))) {
 						//System.out.println("Chuta para longe "+selfPerc.getUniformNumber());
 						//this.turnToPoint(goalPos);
 						//kickToPoint(new Vector2D(-53*side.value(),18*pos),150);
@@ -135,11 +132,14 @@ public class Back extends Thread {
 						}else {
 							//Cobertura
 							if(areaCob.contains(ballPos.getX(), ballPos.getY())) {
+								if(selfPerc.getPosition().distanceTo(ballPos)<7) {
+									this.dash(fieldPerc.getBall().getPosition());
+								}else
 								//System.out.println("Cobertura "+selfPerc.getUniformNumber());
 								this.dash(cobPos);								
 							}else {
 								//System.out.println("Posiciona defesa"+selfPerc.getUniformNumber()+" Time"+selfPerc.getTeam());
-								this.dash(defPos);
+								this.walk(defPos);
 							}							
 						}
 					}										
@@ -150,7 +150,7 @@ public class Back extends Thread {
 						//System.out.println("Toca "+selfPerc.getUniformNumber());
 						kickToPoint(PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 10).getPosition(), 50);
 					}else{
-						this.dash(atcPos);
+						this.walk(atcPos);
 					}
 				}
 				break ;
@@ -266,9 +266,9 @@ public class Back extends Thread {
 		if (selfPerc.getPosition().distanceTo(point) <= 1) return ;
 		if (!isAlignToPoint(point, 10)) turnToPoint(point);
 		if(selfPerc.getPosition().distanceTo(point) <= 1.5) {
-			commander.doDashBlocking(40);
+			commander.doDashBlocking(50);
 		}else if(selfPerc.getPosition().distanceTo(point) < 2) {
-			commander.doDashBlocking(50);			
+			commander.doDashBlocking(60);			
 		}else if(selfPerc.getPosition().distanceTo(point) < 3) {
 			commander.doDashBlocking(75);			
 		}else if(selfPerc.getPosition().distanceTo(point) < 4){
@@ -278,6 +278,13 @@ public class Back extends Thread {
 		}else{
 			commander.doDashBlocking(100);
 		}
+		
+	}
+	
+	private void walk(Vector2D point){
+		if (selfPerc.getPosition().distanceTo(point) <= 1) return ;
+		if (!isAlignToPoint(point, 10)) turnToPoint(point);
+			commander.doDashBlocking(50);
 		
 	}
 
