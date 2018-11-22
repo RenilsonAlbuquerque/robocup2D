@@ -170,16 +170,16 @@ public class MidFielder extends Thread {
 				
 				break ;
 			case GOAL_KICK_RIGHT :
-				dash(initPos);
+				this.walk(initPos);
 				break ;
 			case GOAL_KICK_LEFT :
-				dash(initPos);
+				this.walk(initPos);
 				break ;
 			case AFTER_GOAL_RIGHT :
-				this.dash(initPos);
+				this.walk(initPos);
 				break ;
 			case AFTER_GOAL_LEFT :
-				dash(initPos);
+				this.walk(initPos);
 				
 			case KICK_IN_LEFT :
 				if(selfPerc.getSide().equals(EFieldSide.LEFT)) {
@@ -396,18 +396,7 @@ public class MidFielder extends Thread {
 			return selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 7).getPosition().distanceTo(ballPos) && selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 5).getPosition().distanceTo(ballPos);
 
 	}
-<<<<<<< HEAD
-	/*
-	private PlayerPerception thereIsSomeoneFree() {
-		for(PlayerPerception teammate: this.fieldPerc.getTeamPlayers(side)) {
-			
-		}
-		
-	}
-	*/
-	
-	
-=======
+
 	private void walk(Vector2D point){
 		if (selfPerc.getPosition().distanceTo(point) <= 1) return ;
 		if (!isAlignToPoint(point, 10)) turnToPoint(point);
@@ -466,6 +455,5 @@ public class MidFielder extends Thread {
 		return false;
 		
 	}
->>>>>>> b8001acc3c5eb3d81b84c91f36b08870f3f87f5d
 
 }

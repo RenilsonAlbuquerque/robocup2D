@@ -2,19 +2,13 @@ package FPF.team.Ibis;
 
 import FPF.team.Ibis.players.*;
 import simple_soccer_lib.PlayerCommander;
-import simple_soccer_lib.perception.FieldPerception;
-import simple_soccer_lib.perception.MatchPerception;
 import simple_soccer_lib.perception.PlayerPerception;
-import simple_soccer_lib.utils.EPlayerState;
-import utils.PlayerUtils;
-
 
 public class IbisPlayer extends Thread {
 	private int LOOP_INTERVAL = 100; //0.1s
 	private PlayerCommander commander;
 	private PlayerPerception selfPerc;
-	private FieldPerception fieldPerc;
-	private MatchPerception matchPerc;
+
 
 	public IbisPlayer(PlayerCommander player) {
 		commander = player;
@@ -63,32 +57,13 @@ public class IbisPlayer extends Thread {
 	private void updatePerceptions() {
 		PlayerPerception newSelf =
 				commander.perceiveSelfBlocking();
-		FieldPerception newField =
-				commander.perceiveFieldBlocking();
-		MatchPerception newMatch =
 				commander.perceiveMatchBlocking();
-		if (newSelf != null ) this .selfPerc = newSelf;
-		if (newField != null ) this .fieldPerc = newField;
-		if (newMatch != null ) this .matchPerc = newMatch;
-		this.updateState();
+		if (newSelf != null ) this.selfPerc = newSelf;
+	
 	}
 
 	
 
 
 	
-	/*------------*/
-	private boolean updateState() {
-		if(PlayerUtils.isPointsAreClose(this.selfPerc.getPosition(),this.fieldPerc.getBall().getPosition(),2)
-				) {
-			this.selfPerc.setState(EPlayerState.HAS_BALL);
-			return true;
-		}
-		if(!PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 3).getSide().equals(this.selfPerc.getSide()) ) {
-			this.selfPerc.setState(EPlayerState.CATCH);
-			return true;
-		}
-		return true;
-		
-	}
 }
