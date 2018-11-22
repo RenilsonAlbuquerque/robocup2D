@@ -2,7 +2,7 @@ package FPF.team.Ibis.players;
 
 
 import java.awt.Rectangle;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 
 import simple_soccer_lib.PlayerCommander;
 import simple_soccer_lib.perception.FieldPerception;
@@ -95,12 +95,12 @@ public class MidFielder extends Thread {
 		return angle < margin && angle > margin*(-1);
 	}
 
-	private boolean isPointsAreClose(Vector2D reference,
+	/*private boolean isPointsAreClose(Vector2D reference,
 			Vector2D point, double margin){
 		return reference.distanceTo(point) <= margin;
-	}
+	}*/
 
-	private PlayerPerception getClosestPlayerPoint(Vector2D point, EFieldSide side, double margin){
+	/*private PlayerPerception getClosestPlayerPoint(Vector2D point, EFieldSide side, double margin){
 		ArrayList<PlayerPerception> lp = fieldPerc.getTeamPlayers(side);
 		PlayerPerception np = null ;
 		if (lp != null && !lp.isEmpty()){
@@ -122,7 +122,7 @@ public class MidFielder extends Thread {
 			}
 		}
 		return np;
-	}
+	}*/
 
 	private void action( long nextIteration, int pos) {
 		
@@ -187,7 +187,11 @@ public class MidFielder extends Thread {
 				if(selfPerc.getSide().equals(EFieldSide.LEFT)) {
 					if(pos == -1 && fieldPerc.getBall().getPosition().getX() > -36 && fieldPerc.getBall().getPosition().getY() <= -1){
 						if(ballPos.distanceTo(selfPerc.getPosition())<=1) {
-							kickToPoint(fieldPerc.getTeamPlayer(side, 4).getPosition() ,250);
+							if(isAlignToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(), 5)) {
+								kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition() ,250);
+							}else {
+								turnToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition());
+							}
 						}else{
 							//commander.doMoveBlocking(fieldPerc.getBall().getPosition().getX(),fieldPerc.getBall().getPosition().getY());
 							this.dash(fieldPerc.getBall().getPosition());
@@ -195,24 +199,29 @@ public class MidFielder extends Thread {
 						
 					}else if(pos != -1 && fieldPerc.getBall().getPosition().getX() > -36 && fieldPerc.getBall().getPosition().getY() >= 1){
 						if(ballPos.distanceTo(selfPerc.getPosition())<=1) {
-							kickToPoint(fieldPerc.getTeamPlayer(side, 4).getPosition() ,250);
+							if(isAlignToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(), 5)) {
+								kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition() ,250);
+							}else {
+								turnToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition());
+							}
+							
 						}else {
 							//commander.doMoveBlocking(fieldPerc.getBall().getPosition().getX(),fieldPerc.getBall().getPosition().getY());
 							this.dash(fieldPerc.getBall().getPosition());
 						}
 						
 					}else {
-						this.walk(this.initPos);
+						//this.walk(this.initPos);
 					}
 				}else {
-					this.walk(this.initPos);
+					//this.walk(this.initPos);
 				}
 				break ;
 			case KICK_IN_RIGHT :
 				if(selfPerc.getSide().equals(EFieldSide.RIGHT)) {
 					if(pos != -1 && fieldPerc.getBall().getPosition().getX() < 36 && fieldPerc.getBall().getPosition().getY() <= -1){
 						if(ballPos.distanceTo(selfPerc.getPosition())<=1) {
-							kickToPoint(fieldPerc.getTeamPlayer(side, 4).getPosition(),250);
+							kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(),250);
 						}else {
 							commander.doMoveBlocking(fieldPerc.getBall().getPosition().getX(),fieldPerc.getBall().getPosition().getY());
 							dash(fieldPerc.getBall().getPosition());
@@ -220,32 +229,36 @@ public class MidFielder extends Thread {
 						
 					}else if(pos == -1 && fieldPerc.getBall().getPosition().getX() < 36 && fieldPerc.getBall().getPosition().getY() >= 1){
 						if(ballPos.distanceTo(selfPerc.getPosition())<=1) {
-							kickToPoint(fieldPerc.getTeamPlayer(side, 4).getPosition(),250);
+							kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(),250);
 						}else {
 							commander.doMoveBlocking(fieldPerc.getBall().getPosition().getX(),fieldPerc.getBall().getPosition().getY());
 							dash(fieldPerc.getBall().getPosition());
 						}						
 					}else {
-						this.walk(this.initPos);
+						//this.walk(this.initPos);
 					}
 				}else {
-					this.walk(initPos);
+					//this.walk(initPos);
 				}
 			case CORNER_KICK_LEFT :
 				if(selfPerc.getSide().equals(EFieldSide.LEFT)) {
 					if(initPos.getY()>0 && ballPos.getY()>0) {
 						if(selfPerc.getPosition().distanceTo(ballPos)<=1) {
-							this.turnToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition());
-							this.turnToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition());
-							kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(), 100);
+							if(isAlignToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(), 5)) {
+								kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(), 90);
+							}else {
+								this.turnToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition());
+							}
 						}							
 						else
 							dash(ballPos);
 					}else if(initPos.getY()<0 && ballPos.getY()<0){
 						if(selfPerc.getPosition().distanceTo(ballPos)<=1) {
-							this.turnToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition());
-							this.turnToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition());
-							kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(), 100);
+							if(isAlignToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(), 5)) {
+								kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(), 90);
+							}else {
+								this.turnToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition());
+							}
 						}							
 						else
 							dash(ballPos);
