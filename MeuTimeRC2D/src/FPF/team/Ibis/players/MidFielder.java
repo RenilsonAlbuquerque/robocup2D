@@ -388,5 +388,15 @@ public class MidFielder extends Thread {
 			return selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 7).getPosition().distanceTo(ballPos) && selfPerc.getPosition().distanceTo(ballPos) < fieldPerc.getTeamPlayer(side, 5).getPosition().distanceTo(ballPos);
 
 	}
+	/*
+	private PlayerPerception thereIsSomeoneFree() {
+		for(PlayerPerception teammate: this.fieldPerc.getTeamPlayers(side)) {
+			
+		}
+		
+	}
+	*/
+	
+	
 
 }
