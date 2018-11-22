@@ -133,7 +133,7 @@ public class Goolkeeper {
 								
 								double y = ((x2 * y1) - (y2 * x1))/ (x2 - x1);
 							
-								if(y>-7 && y<7)
+								if(y>=-7 && y<=7)
 									this.dash(new Vector2D(initPos.getX(),y));
 								
 												
@@ -159,7 +159,11 @@ public class Goolkeeper {
 						
 							this.dash(currentBallPos);
 							if(this.selfPerc.getPosition().distanceTo(this.fieldPerc.getBall().getPosition()) <= 1) {
-								this.kickToPoint(PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), -3).getPosition(), -500);		
+								if(isAlignToPoint(centro, 5)) {
+									this.kickToPoint(centro, 500);
+								}else {
+									turnToPoint(centro);
+								}		
 							}
 						}
 						break;
@@ -169,7 +173,12 @@ public class Goolkeeper {
 							
 							this.dash(currentBallPos);
 							if(this.selfPerc.getPosition().distanceTo(this.fieldPerc.getBall().getPosition()) <= 1) {
-								this.kickToPoint(PlayerUtils.getClosestTeammatePoint(this.fieldPerc,this.selfPerc.getPosition(), this.selfPerc.getSide(), 3).getPosition(), 500);
+								if(isAlignToPoint(centro, 5)) {
+									this.kickToPoint(centro, 500);
+								}else {
+									turnToPoint(centro);
+								}
+								
 							
 							}
 							}	

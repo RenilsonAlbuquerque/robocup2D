@@ -62,9 +62,9 @@ public class Farward extends Thread {
 			case PLAY_ON :				
 				if(selfPerc.getPosition().distanceTo(ballPos)<=1) {
 					if(selfPerc.getPosition().distanceTo(goalPos)<=28) {
-						if(fieldPerc.getTeamPlayer(EFieldSide.invert(side), 1).getPosition().getY()>0) {
+						if(fieldPerc.getTeamPlayer(EFieldSide.invert(side), 1).getPosition().getY()<0) {
 							//Chuta para o gol
-							if(this.isAlignToPoint(goalPosBaixo, 10)) {
+							if(this.isAlignToPoint(goalPosBaixo, 5)) {
 								System.out.println(selfPerc.getTeam()+" Chuta para baixo");
 								this.kickToPoint(goalPosBaixo, 500);
 							}else {
@@ -72,7 +72,7 @@ public class Farward extends Thread {
 							}
 						}else {
 							//Chuta para o gol
-							if(this.isAlignToPoint(goalPosCima, 10)) {
+							if(this.isAlignToPoint(goalPosCima, 5)) {
 								System.out.println(selfPerc.getTeam()+" Chuta para cima");
 								this.kickToPoint(goalPosCima, 500);
 							}else {
@@ -83,7 +83,7 @@ public class Farward extends Thread {
 						
 					}else {
 						//Conduz
-						System.out.println(selfPerc.getTeam()+" Conduz");
+						//System.out.println(selfPerc.getTeam()+" Conduz");
 						this.kickToPoint(goalPos, 20);
 					}				
 				}else {
@@ -93,40 +93,43 @@ public class Farward extends Thread {
 						if(ballPos.distanceTo(fieldPerc.getTeamPlayer(side, 4).getPosition())>5 && ballPos.distanceTo(fieldPerc.getTeamPlayer(side, 5).getPosition())>5 && ballPos.distanceTo(fieldPerc.getTeamPlayer(side, 6).getPosition())>5 && selfPerc.getPosition().distanceTo(ballPos)<18)
 							this.dash(ballPos);
 						else
-							this.walk(ataPos);
+							this.walk(ataPos,50);
 					}else if(this.areaAtack.contains(ballPos.getX(), ballPos.getY()) && selfPerc.getPosition().distanceTo(ballPos)<=8) {
-						//Marca avançado
-						System.out.println(selfPerc.getTeam()+" Marca avançado");
+						//System.out.println(selfPerc.getTeam()+" Marca avançado");
 						this.dash(ballPos);
 					}else if(this.areaAtack.contains(ballPos.getX(), ballPos.getY()) && selfPerc.getPosition().distanceTo(ballPos)<=20) {
 							//Marca avançado
-							System.out.println(selfPerc.getTeam()+" Marca avançado");
-							this.walk(ballPos);
-					//Pocisona
-					}else if(ballPos.getX()>5 && ballPos.getX()<30 && side.equals(EFieldSide.LEFT) && (fieldPerc.getTeamPlayer(side, 5).getPosition().getX()>8 || fieldPerc.getTeamPlayer(side, 6).getPosition().getX()>8)){
-						this.walk(new Vector2D(29,0));
-					}else if(ballPos.getX()<-5 && ballPos.getX()>-30 && side.equals(EFieldSide.RIGHT)&& (fieldPerc.getTeamPlayer(side, 5).getPosition().getX()<-8 || fieldPerc.getTeamPlayer(side, 6).getPosition().getX()<-8)){
-						this.walk(new Vector2D(-29,0));
-					}else if(ballPos.getX()>29 && side.equals(EFieldSide.LEFT) && (fieldPerc.getTeamPlayer(side, 5).getPosition().getX()>20 || fieldPerc.getTeamPlayer(side, 6).getPosition().getX()>20)){
-						this.walk(escanPos);
-					}else if(ballPos.getX()<-29 && side.equals(EFieldSide.RIGHT)&& (fieldPerc.getTeamPlayer(side, 5).getPosition().getX()<-20 || fieldPerc.getTeamPlayer(side, 6).getPosition().getX()<-20)){
-						this.walk(escanPos);
+							//System.out.println(selfPerc.getTeam()+" Marca avançado");
+							this.walk(ballPos,70);
+					//Pocisona para receber
+					}else if(ballPos.getX()>5 && ballPos.getX()<30 && side.equals(EFieldSide.LEFT) && (fieldPerc.getTeamPlayer(side, 5).getPosition().distanceTo(ballPos)>15 | fieldPerc.getTeamPlayer(side, 6).getPosition().distanceTo(ballPos)>15)){
+						//System.out.println(selfPerc.getTeam()+" posiciona recuado");
+						this.walk(new Vector2D(29,0),60);
+					}else if(ballPos.getX()<-5 && ballPos.getX()>-30 && side.equals(EFieldSide.RIGHT)&& (fieldPerc.getTeamPlayer(side, 5).getPosition().distanceTo(ballPos)>15 | fieldPerc.getTeamPlayer(side, 6).getPosition().distanceTo(ballPos)>15)){
+						//System.out.println(selfPerc.getTeam()+" posiciona recuado");
+						this.walk(new Vector2D(-29,0),60);
+					}else if(ballPos.getX()>29 && side.equals(EFieldSide.LEFT) && (fieldPerc.getTeamPlayer(side, 5).getPosition().distanceTo(ballPos)>15 | fieldPerc.getTeamPlayer(side, 6).getPosition().distanceTo(ballPos)>15)){
+						//System.out.println(selfPerc.getTeam()+" posiciona avançado");
+						this.walk(escanPos,60);
+					}else if(ballPos.getX()<-29 && side.equals(EFieldSide.RIGHT)&& (fieldPerc.getTeamPlayer(side, 5).getPosition().distanceTo(ballPos)>15 | fieldPerc.getTeamPlayer(side, 6).getPosition().distanceTo(ballPos)>15)){
+						//System.out.println(selfPerc.getTeam()+" posiciona avançado");
+						this.walk(escanPos,60);
 					}else if(ballPos.getX()<0 && side.equals(EFieldSide.LEFT)) {
 						//System.out.println(selfPerc.getTeam()+" Posiciona defesa");
 						//Posiciona defesa esqueda
-						this.walk(defPos);
+						this.walk(defPos,40);
 					}else if(ballPos.getX()>0 && side.equals(EFieldSide.RIGHT)) {
 						//System.out.println(selfPerc.getTeam()+" Posiciona defesa");
 						//Posiciona defesa direita
-						this.walk(defPos);
+						this.walk(defPos,40);
 					}else if(ballPos.getX()>0 && side.equals(EFieldSide.LEFT)) {
 						//Posiciona ataque esqueda
 						//System.out.println(selfPerc.getTeam()+" Posiciona ataque");
-						this.walk(ataPos);
+						this.walk(ataPos,40);
 					}else if(ballPos.getX()<0 && side.equals(EFieldSide.RIGHT)) {
 						//Posiciona ataque direita
 						//System.out.println(selfPerc.getTeam()+" Posiciona ataque");
-						this.walk(ataPos);
+						this.walk(ataPos,40);
 					}
 				}
 				/*if(this.selfPerc.getPosition().distanceTo(ballPos) <=6) {
@@ -157,10 +160,10 @@ public class Farward extends Thread {
 			break;
 			case AFTER_GOAL_RIGHT :
 				//commander.doMoveBlocking(xDef, yDef);
-				dash(initPos);
+				walk(initPos,20);
 				break ;
 			case AFTER_GOAL_LEFT :
-				dash(initPos);
+				walk(initPos,20);
 				//commander.doMoveBlocking(xDef, yDef);
 				break ;
 			case KICK_OFF_LEFT :
@@ -203,12 +206,12 @@ public class Farward extends Thread {
 				break ;
 			case KICK_IN_RIGHT :
 				if(this.side.value() == 1) {
-					this.walk(ataPos);
+					this.walk(ataPos, 40);
 				}
 				break;
 			case KICK_IN_LEFT :	
 				if(this.side.value() == -1) {
-					this.walk(ataPos);
+					this.walk(ataPos, 40);
 				}
 				break;
 			case GOAL_KICK_RIGHT :
@@ -348,10 +351,10 @@ public class Farward extends Thread {
 		}
 		
 	}
-	private void walk(Vector2D point){
+	private void walk(Vector2D point, int intensitivy){
 		if (selfPerc.getPosition().distanceTo(point) <= 1) return ;
 		if (!isAlignToPoint(point, 10)) turnToPoint(point);
-			commander.doDashBlocking(40);
+			commander.doDashBlocking(intensitivy);
 		
 	}
 
