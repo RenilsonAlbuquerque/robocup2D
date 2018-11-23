@@ -9,7 +9,7 @@ public class MainKrislet {
 		int numPlayers = 7; 
 		
 		try {			
-			launchServer();
+			//launchServer();
 			
 			try {
 				Thread.sleep(2000);

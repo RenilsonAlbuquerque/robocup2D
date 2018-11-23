@@ -85,16 +85,16 @@ public class DefensiveMidFielder extends Thread {
 			if(!(this.teamIsAtc())){ // meu time não tem a bola?
 					//Chuta para longe do gol
 					if(ballPos.distanceTo(selfPerc.getPosition())<=1 && (((ballPos.getX()<-32)&&(selfPerc.getSide().value() == 1)) || ((ballPos.getX()>32)&&(selfPerc.getSide().value() == -1)))) {
-						System.out.println("Chuta para longe "+selfPerc.getUniformNumber());
+						//System.out.println("Chuta para longe "+selfPerc.getUniformNumber());
 						kickToPoint(goalPos,150);
 					}else if(ballPos.distanceTo(selfPerc.getPosition())<=1){
 						this.tocarPara = this.getBestPlayerToWork();
 						//Toca para meias
 						if(tocarPara != null) {
-							System.out.println("Jogador "+selfPerc.getTeam()+" Toca para "+tocarPara.getUniformNumber() + tocarPara.getTeam());
+							//System.out.println("Jogador "+selfPerc.getTeam()+" Toca para "+tocarPara.getUniformNumber() + tocarPara.getTeam());
 							turnToPoint(this.tocarPara.getPosition());
 							//kickToPoint(this.tocarPara.getPosition(), 4*ballPos.distanceTo(this.getBestPlayerToWork().getPosition()));
-							System.out.println(selfPerc.getPosition().distanceTo(this.tocarPara.getPosition()));
+							//System.out.println(selfPerc.getPosition().distanceTo(this.tocarPara.getPosition()));
 							if(selfPerc.getPosition().distanceTo(this.tocarPara.getPosition())<15) {
 								kickToPoint(this.tocarPara.getPosition(), 5*selfPerc.getPosition().distanceTo(this.tocarPara.getPosition()));
 							}else if(selfPerc.getPosition().distanceTo(this.tocarPara.getPosition())<30){

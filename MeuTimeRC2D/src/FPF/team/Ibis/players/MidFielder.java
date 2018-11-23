@@ -26,6 +26,7 @@ public class MidFielder extends Thread {
 	private double xInit, yInit;
 	private int pos;
 	private Vector2D ballPos;
+	private Vector2D escanPos;
 	
 	
 	public MidFielder(PlayerCommander player, long nextIteration,int pos) {
@@ -36,6 +37,7 @@ public class MidFielder extends Thread {
 		this.yInit=20*pos;
 		this.goalPos = new Vector2D(50*side.value(), 0);
 		this.initPos =	new Vector2D(xInit*side.value(), yInit*side.value());
+		this.escanPos = new Vector2D(35*this.side.value(), 0*this.side.value());
 		this.pos = pos;
 		
 		if(pos  == 1) {
@@ -214,16 +216,20 @@ public class MidFielder extends Thread {
 						//this.walk(this.initPos);
 					}
 				}else {
-					//this.walk(this.initPos);
+					this.walk(this.initPos);
 				}
 				break ;
 			case KICK_IN_RIGHT :
 				if(selfPerc.getSide().equals(EFieldSide.RIGHT)) {
 					if(pos != -1 && fieldPerc.getBall().getPosition().getX() < 36 && fieldPerc.getBall().getPosition().getY() <= -1){
 						if(ballPos.distanceTo(selfPerc.getPosition())<=1) {
-							kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(),250);
+							if(isAlignToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(), 7)) {
+								kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(),250);
+							}else{
+								turnToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition());
+							}
 						}else {
-							commander.doMoveBlocking(fieldPerc.getBall().getPosition().getX(),fieldPerc.getBall().getPosition().getY());
+							//commander.doMoveBlocking(fieldPerc.getBall().getPosition().getX(),fieldPerc.getBall().getPosition().getY());
 							dash(fieldPerc.getBall().getPosition());
 						}			
 						
@@ -231,14 +237,14 @@ public class MidFielder extends Thread {
 						if(ballPos.distanceTo(selfPerc.getPosition())<=1) {
 							kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(),250);
 						}else {
-							commander.doMoveBlocking(fieldPerc.getBall().getPosition().getX(),fieldPerc.getBall().getPosition().getY());
+							//commander.doMoveBlocking(fieldPerc.getBall().getPosition().getX(),fieldPerc.getBall().getPosition().getY());
 							dash(fieldPerc.getBall().getPosition());
 						}						
 					}else {
 						//this.walk(this.initPos);
 					}
 				}else {
-					//this.walk(initPos);
+					this.walk(initPos);
 				}
 			case CORNER_KICK_LEFT :
 				if(selfPerc.getSide().equals(EFieldSide.LEFT)) {
@@ -351,9 +357,31 @@ public class MidFielder extends Thread {
 	private void atack(Vector2D originalPosition) {
 		if (PlayerUtils.isPointsAreClose(selfPerc.getPosition(),
 				this.fieldPerc.getBall().getPosition(), 1)){
+			if(side.equals(EFieldSide.LEFT) && selfPerc.getPosition().getX()>=36 && fieldPerc.getTeamPlayer(side, 7).getPosition().distanceTo(escanPos)<5) {
+				if(isAlignToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(), 10))
+					turnToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition());
+				System.out.println("Cruza dirieta");
+				kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(),40);
+				//}else {
+					//turnToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition());
+				//}
+			}else if(side.equals(EFieldSide.RIGHT) && selfPerc.getPosition().getX()<=-36 && fieldPerc.getTeamPlayer(side, 7).getPosition().distanceTo(escanPos)<5) {
+				if(!(isAlignToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(), 10)))
+					turnToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition());
+				System.out.println("Cruza esquerda");
+				kickToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition(),40);
+				//}else {
+					//turnToPoint(fieldPerc.getTeamPlayer(side, 7).getPosition());
+				//}
+			}
 			if (PlayerUtils.isPointsAreClose(this.fieldPerc.getBall().getPosition(), goalPos, 28)){
 				// chuta para o gol
-				kickToPoint(goalPos, 100);
+				if(isAlignToPoint(goalPos, 5)) {
+					kickToPoint(goalPos, 100);
+				}{
+					turnToPoint(goalPos);
+				}
+				
 			} else {
 				//this.keepOrKick();
 				
@@ -508,7 +536,7 @@ public class MidFielder extends Thread {
 			}
 		}
 	}
-	private void keepOrKick() {
+	/*private void keepOrKick() {
 		double marcadoresMid=0;
 		double marcadoresCenter=0;
 		double marcadoresFar =0;
@@ -565,7 +593,7 @@ public class MidFielder extends Thread {
 			//this.kickToPoint(goalPos, 20);
 		}
 			
-	}
+	}*/
 	/*
 	private boolean playerInMyFront(PlayerPerception target) {
 		if(target.getDirection().distanceTo(other))
